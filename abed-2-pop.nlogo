@@ -676,8 +676,8 @@ to setup-graphs
     setup-miliseconds-graph (word "Pop. " pop ": Strategy distributions (recent history)") 1 pop
     setup-graph (word "Pop. " pop ": Strategy distributions (complete history)") 1 pop
 
-    setup-miliseconds-graph (word "Pop. " pop ": Strategies' expected payoff (recent history)") 0 pop
-    setup-graph (word "Pop. " pop ": Strategies' expected payoff (complete history)") 0 pop
+    setup-miliseconds-graph (word "Pop. " pop ": Strategies' exp. payoff (recent history)") 0 pop
+    setup-graph (word "Pop. " pop ": Strategies' exp. payoff (complete history)") 0 pop
   ]
   update-graphs
 end
@@ -721,7 +721,7 @@ to update-graphs
         plot-frequencies-?-at-? strategy-frequencies (1000 * second-to-plot) strategy-numbers
         fix-x-range
 
-      set-current-plot (word "Pop. " pop ": Strategies' expected payoff (recent history)")
+      set-current-plot (word "Pop. " pop ": Strategies' exp. payoff (recent history)")
         foreach strategy-numbers [ [s] ->
           set-current-plot-pen (word s)
           ;; set-plot-pen-interval plot-every-?-ticks
@@ -734,7 +734,7 @@ to update-graphs
       set-current-plot (word "Pop. " pop ": Strategy distributions (complete history)")
         plot-frequencies-?-at-? strategy-frequencies second-to-plot strategy-numbers
 
-      set-current-plot (word "Pop. " pop ": Strategies' expected payoff (complete history)")
+      set-current-plot (word "Pop. " pop ": Strategies' exp. payoff (complete history)")
         foreach strategy-numbers [ [s] ->
           set-current-plot-pen (word s)
           ;; set-plot-pen-interval plot-every-?-ticks
@@ -862,25 +862,28 @@ end
 to setup-list-of-parameters
   set list-of-parameters (list
     "payoff-matrix"
-    "n-of-agents"
+    "pop-1-n-of-agents"
+    "pop-2-n-of-agents"
     "random-initial-condition?"
-    "initial-condition"
-    "candidate-selection"
-    "decision-method"
-    "complete-matching?"
-    "n-of-trials"
-    "single-sample?"
-    "n-in-test-set"
-    "tie-breaker"
-    "eta"
-    "random-walk-speed"
-    "n-to-consider-imitating"
+    "pop-1-n-of-agents-for-each-strategy"
+    "pop-2-n-of-agents-for-each-strategy"
     "use-prob-revision?"
     "prob-revision"
     "n-of-revisions-per-tick"
+    "candidate-selection"
+    "pop-1-n-in-test-set"
+    "pop-2-n-in-test-set"
+    "pop-1-n-to-consider-imitating"
+    "pop-2-n-to-consider-imitating"
+    "complete-matching?"
+    "n-of-trials"
+    "single-sample?"
+    "decision-method"
     "prob-mutation"
+    "tie-breaker"
+    "eta"
+    "random-walk-speed"
     "trials-with-replacement?"
-    "self-matching?"
     "imitatees-with-replacement?"
     "consider-imitating-self?"
     "plot-every-?-secs"
@@ -929,17 +932,29 @@ to-report put-sublists-in-different-lines [s]
   set s substring s (open-bracket-pos + 1) (length s)
   let close-bracket-pos -1
 
-  let new-s "["
+  let new-s "[\n "
 
   set open-bracket-pos position "[" s
   while [open-bracket-pos != false] [
-    set close-bracket-pos position "]" s
+    set close-bracket-pos position-of-second-closing-bracket s
     set new-s (word new-s (substring s open-bracket-pos (close-bracket-pos + 1)) "\n ")
     set s substring s (close-bracket-pos + 1) (length s)
     set open-bracket-pos position "[" s
   ]
-  report (word substring new-s 0 (length new-s - 2) "]")
+  report (word substring new-s 0 (length new-s - 2) "\n]")
 
+end
+
+to-report position-of-second-closing-bracket [str]
+  let running-str str
+  let opening-bracket-pos position "[" running-str
+  while [position "[" running-str != false and (position "[" running-str < position "]" running-str) ] [
+    set running-str substring running-str (position "]" running-str + 1) (length running-str)
+  ]
+  let second-position position "]" running-str
+  ifelse second-position = false [report false][
+    report (length str - length running-str) + second-position
+  ]
 end
 
 ;; This procedure saves the parameters into a new file
@@ -1026,7 +1041,7 @@ INPUTBOX
 230
 488
 payoff-matrix
-[\n [[4 0][3 3.1]]\n [[3 4][4 5]]\n [[0 0][100 0]]\n]
+[\n [[4 0][3   3.1]]\n [[3 4][4   5  ]]\n [[0 0][100 0  ]]\n]
 1
 1
 String (reporter)
@@ -1482,7 +1497,7 @@ PLOT
 752
 596
 872
-Pop. 1: Strategies' expected payoff (recent history)
+Pop. 1: Strategies' exp. payoff (recent history)
 milliseconds
 NIL
 0.0
@@ -1499,7 +1514,7 @@ PLOT
 752
 942
 872
-Pop. 1: Strategies' expected payoff (complete history)
+Pop. 1: Strategies' exp. payoff (complete history)
 seconds
 NIL
 0.0
@@ -1776,7 +1791,7 @@ PLOT
 874
 596
 994
-Pop. 2: Strategies' expected payoff (recent history)
+Pop. 2: Strategies' exp. payoff (recent history)
 milliseconds
 NIL
 0.0
@@ -1793,7 +1808,7 @@ PLOT
 874
 942
 994
-Pop. 2: Strategies' expected payoff (complete history)
+Pop. 2: Strategies' exp. payoff (complete history)
 seconds
 NIL
 0.0

@@ -537,14 +537,14 @@ to update-payoffs-of-strategy-agents [strategy-set]
   [
     run update-counterparts
 
-    let my-payoffs item (strategy - 1) ifelse-value (my-pop-number = 1) [pop-1-payoff-matrix][pop-2-payoff-matrix]
-    let n-of-strategies-of-counterparts (length my-payoffs)
-
     ask strategy-set [
       set counterparts runresult reported-counterparts
         ;; reported-counterparts can be fixed-counterparts (if single-sample?)
         ;; or variable-counterparts (if not single-sample?)
-      let total-payoff sum (map * my-payoffs (strategy-freq counterparts n-of-strategies-of-counterparts))
+
+      let my-payoffs item (strategy - 1) ifelse-value (my-pop-number = 1) [pop-1-payoff-matrix][pop-2-payoff-matrix]
+
+      let total-payoff sum (map * my-payoffs (strategy-freq counterparts (length my-payoffs)))
       set payoff total-payoff / n-of-trials
     ]
   ]
@@ -1041,7 +1041,7 @@ INPUTBOX
 230
 488
 payoff-matrix
-[\n [[4 0][3   3.1]]\n [[3 4][4   5  ]]\n [[0 0][100 0  ]]\n]
+[\n [[0 0] [0 0] [0 0] [0 0]]\n [[-1 3][2 2] [2 2] [2 2]]\n [[-1 3] [1 5] [4 4][4 4]]\n [[-1 3] [1 5] [3 7][6 6]]\n]
 1
 1
 String (reporter)
@@ -1062,10 +1062,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-562
-690
-713
-723
+563
+684
+714
+717
 prob-mutation
 prob-mutation
 0
@@ -1173,10 +1173,10 @@ true
 PENS
 
 SLIDER
-280
-528
-475
-561
+276
+568
+471
+601
 duration-of-recent
 duration-of-recent
 1
@@ -1188,21 +1188,21 @@ sec.
 HORIZONTAL
 
 SWITCH
-281
-567
-475
-600
+277
+607
+471
+640
 show-recent-history?
 show-recent-history?
-0
+1
 1
 -1000
 
 SWITCH
-281
-603
-474
-636
+277
+643
+470
+676
 show-complete-history?
 show-complete-history?
 0
@@ -1215,7 +1215,7 @@ INPUTBOX
 252
 673
 pop-1-n-of-agents-for-each-strategy
-[200 100 100]
+[200 100 100 100]
 1
 0
 String (reporter)
@@ -1232,15 +1232,15 @@ use-prob-revision?
 -1000
 
 SLIDER
-280
-488
-475
-521
+276
+528
+471
+561
 plot-every-?-secs
 plot-every-?-secs
 0.01
 5
-0.025
+0.1
 0.01
 1
 NIL
@@ -1255,7 +1255,7 @@ n-of-revisions-per-tick
 n-of-revisions-per-tick
 1
 (max list pop-1-n-of-agents pop-2-n-of-agents)
-10.0
+50.0
 1
 1
 NIL
@@ -1273,10 +1273,10 @@ ticks-per-second
 11
 
 SWITCH
-742
-341
-924
-374
+750
+340
+932
+373
 complete-matching?
 complete-matching?
 1
@@ -1284,10 +1284,10 @@ complete-matching?
 -1000
 
 SLIDER
-741
-394
-924
-427
+749
+393
+932
+426
 n-of-trials
 n-of-trials
 1
@@ -1307,27 +1307,27 @@ pop-1-n-in-test-set
 pop-1-n-in-test-set
 2
 pop-1-max-size-of-test-set
-2.0
+4.0
 1
 1
 NIL
 HORIZONTAL
 
 TEXTBOX
-724
-674
-779
-692
+725
+668
+780
+686
 for logit:
 11
 0.0
 1
 
 SLIDER
-724
-690
-875
-723
+725
+684
+876
+717
 eta
 eta
 0.001
@@ -1339,20 +1339,20 @@ NIL
 HORIZONTAL
 
 CHOOSER
-722
-627
-874
-672
+723
+621
+875
+666
 tie-breaker
 tie-breaker
 "stick-uniform" "stick-min" "uniform" "min" "random-walk"
-1
+3
 
 TEXTBOX
-724
-610
-857
-628
+725
+604
+858
+622
 for best:
 11
 0.0
@@ -1394,10 +1394,10 @@ for direct & (best or logit):
 1
 
 SLIDER
-26
-952
-234
-985
+29
+925
+237
+958
 random-walk-speed
 random-walk-speed
 0
@@ -1409,10 +1409,10 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-27
-937
-287
-956
+30
+910
+290
+929
 for best & random-walk tie-breaker:
 11
 0.0
@@ -1426,33 +1426,33 @@ CHOOSER
 candidate-selection
 candidate-selection
 "imitative" "direct"
-0
+1
 
 CHOOSER
-562
-617
-713
-662
+563
+611
+714
+656
 decision-method
 decision-method
 "best" "logit" "proportional"
-2
+0
 
 TEXTBOX
-741
-433
-951
-463
+749
+432
+959
+462
 for complete-matching=off \n     & direct:
 11
 0.0
 1
 
 SWITCH
-767
-467
-924
-500
+775
+466
+932
+499
 single-sample?
 single-sample?
 1
@@ -1460,10 +1460,10 @@ single-sample?
 -1000
 
 SWITCH
-25
-810
-231
-843
+28
+783
+234
+816
 trials-with-replacement?
 trials-with-replacement?
 1
@@ -1471,10 +1471,10 @@ trials-with-replacement?
 -1000
 
 SWITCH
-26
-862
-242
-895
+29
+835
+245
+868
 imitatees-with-replacement?
 imitatees-with-replacement?
 0
@@ -1482,10 +1482,10 @@ imitatees-with-replacement?
 -1000
 
 SWITCH
-26
-900
-243
-933
+29
+873
+246
+906
 consider-imitating-self?
 consider-imitating-self?
 0
@@ -1493,10 +1493,10 @@ consider-imitating-self?
 -1000
 
 PLOT
-278
-752
-596
-872
+275
+733
+593
+853
 Pop. 1: Strategies' exp. payoff (recent history)
 milliseconds
 NIL
@@ -1510,10 +1510,10 @@ true
 PENS
 
 PLOT
-599
-752
-942
-872
+596
+733
+939
+853
 Pop. 1: Strategies' exp. payoff (complete history)
 seconds
 NIL
@@ -1561,20 +1561,20 @@ NIL
 1
 
 TEXTBOX
-26
-847
-217
-865
+29
+820
+220
+838
 for imitative:\n
 11
 0.0
 1
 
 TEXTBOX
-743
-378
-910
-396
+751
+377
+918
+395
 for complete-matching=off:
 11
 0.0
@@ -1591,10 +1591,10 @@ Assignment of revision opportunities
 1
 
 TEXTBOX
-804
-320
-877
-338
+812
+319
+885
+337
 Matching
 13
 13.0
@@ -1611,20 +1611,20 @@ Candidate selection
 1
 
 TEXTBOX
-562
-674
-712
-692
+563
+668
+713
+686
 mutations:
 11
 0.0
 1
 
 TEXTBOX
-656
-589
-786
-607
+657
+583
+787
+601
 Decision method
 13
 13.0
@@ -1641,20 +1641,20 @@ Game and population
 1
 
 TEXTBOX
-320
-468
-438
-486
+316
+508
+434
+526
 Plotting of output
 12
 0.0
 1
 
 TEXTBOX
-27
-795
-208
-813
+30
+768
+211
+786
 for complete-matching=off:
 11
 0.0
@@ -1676,7 +1676,7 @@ INPUTBOX
 252
 737
 pop-2-n-of-agents-for-each-strategy
-[100 300]
+[100 200 100 100]
 1
 0
 String (reporter)
@@ -1690,7 +1690,7 @@ pop-2-n-in-test-set
 pop-2-n-in-test-set
 2
 pop-2-max-size-of-test-set
-2.0
+4.0
 1
 1
 NIL
@@ -1720,7 +1720,7 @@ pop-1-n-of-agents
 pop-1-n-of-agents
 1
 1000
-400.0
+500.0
 1
 1
 NIL
@@ -1735,7 +1735,7 @@ pop-2-n-of-agents
 pop-2-n-of-agents
 1
 1000
-400.0
+500.0
 1
 1
 NIL
@@ -1748,7 +1748,7 @@ SWITCH
 605
 random-initial-condition?
 random-initial-condition?
-1
+0
 1
 -1000
 
@@ -1787,10 +1787,10 @@ true
 PENS
 
 PLOT
-278
-874
-596
-994
+275
+855
+593
+975
 Pop. 2: Strategies' exp. payoff (recent history)
 milliseconds
 NIL
@@ -1804,10 +1804,10 @@ true
 PENS
 
 PLOT
-599
-874
-942
-994
+596
+855
+939
+975
 Pop. 2: Strategies' exp. payoff (complete history)
 seconds
 NIL

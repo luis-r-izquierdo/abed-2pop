@@ -68,11 +68,11 @@ globals [
   pop-1-rate-scaling
   pop-2-rate-scaling
 
-  pop-1-max-size-of-test-set ;; for direct protocols
-  pop-2-max-size-of-test-set ;; for direct protocols
+  pop-1-max-n-in-test-set ;; for direct protocols
+  pop-2-max-n-in-test-set ;; for direct protocols
 
-  pop-1-max-number-to-consider-imitating ;; for imitative protocols
-  pop-2-max-number-to-consider-imitating ;; for imitative protocols
+  pop-1-max-n-to-consider-imitating ;; for imitative protocols
+  pop-2-max-n-to-consider-imitating ;; for imitative protocols
 
   pop-1-strategy-numbers ;; for efficiency
   pop-2-strategy-numbers ;; for efficiency
@@ -227,7 +227,7 @@ to reset-populations
     set the-other-pop-list sort pop-1-agents
   ]
 
-  set n-of-revisions-per-tick min (list n-of-revisions-per-tick (max list pop-1-n-of-agents pop-2-n-of-agents))
+  set n-of-revisions-per-tick min (list n-of-revisions-per-tick (pop-1-n-of-agents + pop-2-n-of-agents))
   pop-1-setup-random-walk
   pop-2-setup-random-walk
 
@@ -261,21 +261,21 @@ to setup-dynamics
 
   ;; NUMBER OF STRATEGIES YOU WILL TEST (ONLY RELEVANT IN DIRECT PROTOCOLS)
   set pop-1-n-in-test-set min list pop-1-n-in-test-set pop-1-n-of-strategies
-  set pop-1-max-size-of-test-set min list 10 pop-1-n-of-strategies
+  set pop-1-max-n-in-test-set min list 10 pop-1-n-of-strategies
 
   set pop-2-n-in-test-set min list pop-2-n-in-test-set pop-2-n-of-strategies
-  set pop-2-max-size-of-test-set min list 10 pop-2-n-of-strategies
+  set pop-2-max-n-in-test-set min list 10 pop-2-n-of-strategies
 
   ;; NUMBER OF AGENTS YOU WILL CONSIDER FOR IMITATION (ONLY RELEVANT IN IMITATIVE PROTOCOLS)
   let correction-factor ifelse-value (consider-imitating-self? and imitatees-with-replacement?) [0][1]
 
   let pop-1-max-value (pop-1-n-of-agents - correction-factor)
   set pop-1-n-to-consider-imitating min list pop-1-n-to-consider-imitating pop-1-max-value
-  set pop-1-max-number-to-consider-imitating min list 10 pop-1-max-value
+  set pop-1-max-n-to-consider-imitating min list 10 pop-1-max-value
 
   let pop-2-max-value (pop-2-n-of-agents - correction-factor)
   set pop-2-n-to-consider-imitating min list pop-2-n-to-consider-imitating pop-2-max-value
-  set pop-2-max-number-to-consider-imitating min list 10 pop-2-max-value
+  set pop-2-max-n-to-consider-imitating min list 10 pop-2-max-value
 
   ;; RULE USED TO SELECT AMONG DIFFERENT CANDIDATES
   set follow-rule runresult (word "[ [] -> " decision-method " ]")
@@ -357,11 +357,10 @@ to go
 end
 
 to update-ticks-per-second
-  ;; it is assumed that, on average, all agents in the greater population revise once per second.
-  ;; (so, on average, all agents revise at least once per second)
+  ;; it is assumed that, on average, all agents revise once per second.
   set ticks-per-second ifelse-value use-prob-revision?
     [ 1 / prob-revision]
-    [ (max list pop-1-n-of-agents pop-2-n-of-agents) / n-of-revisions-per-tick ]
+    [ (pop-1-n-of-agents + pop-2-n-of-agents) / n-of-revisions-per-tick ]
 
   if plot-every-?-secs < 1 / ticks-per-second [set plot-every-?-secs 1 / ticks-per-second]
   set plotting-period (ticks-per-second * plot-every-?-secs)
@@ -1037,20 +1036,20 @@ ticks
 
 INPUTBOX
 25
-341
-230
-488
+347
+247
+494
 payoff-matrix
-[\n [[0 0] [0 0] [0 0] [0 0]]\n [[-1 3][2 2] [2 2] [2 2]]\n [[-1 3] [1 5] [4 4][4 4]]\n [[-1 3] [1 5] [3 7][6 6]]\n]
+[\n [[ 0 0][0 0][0 0][0 0][0  0][0 0]]\n [[-1 3][2 2][2 2][2 2][2  2][2 2]]\n [[-1 3][1 5][4 4][4 4][4  4][4 4]]\n [[-1 3][1 5][3 7][6 6][6  6][6 6]]\n [[-1 3][1 5][3 7][5 9][8  8][8 8]]\n [[-1 3][1 5][3 7][5 9][7 11][10 10]]\n]
 1
 1
 String (reporter)
 
 SLIDER
-275
-378
-463
-411
+287
+383
+475
+416
 prob-revision
 prob-revision
 0.001
@@ -1062,24 +1061,24 @@ NIL
 HORIZONTAL
 
 SLIDER
-563
-684
-714
-717
+561
+686
+712
+719
 prob-mutation
 prob-mutation
 0
 1
-0.01
+0.0
 0.001
 1
 NIL
 HORIZONTAL
 
 BUTTON
-26
+25
 10
-110
+109
 43
 setup
 startup
@@ -1094,9 +1093,9 @@ NIL
 1
 
 BUTTON
-222
+221
 10
-302
+301
 43
 go once
 go
@@ -1111,9 +1110,9 @@ NIL
 1
 
 BUTTON
-121
+120
 10
-210
+209
 43
 NIL
 go
@@ -1128,9 +1127,9 @@ NIL
 1
 
 MONITOR
-678
+677
 10
-798
+797
 55
 NIL
 ticks
@@ -1173,36 +1172,36 @@ true
 PENS
 
 SLIDER
-276
-568
-471
-601
+286
+574
+481
+607
 duration-of-recent
 duration-of-recent
 1
 100
-10.0
+20.0
 1
 1
 sec.
 HORIZONTAL
 
 SWITCH
-277
-607
-471
-640
+287
+613
+481
+646
 show-recent-history?
 show-recent-history?
-1
+0
 1
 -1000
 
 SWITCH
-277
-643
-470
-676
+287
+649
+480
+682
 show-complete-history?
 show-complete-history?
 0
@@ -1210,21 +1209,21 @@ show-complete-history?
 -1000
 
 INPUTBOX
-27
-613
-252
-673
+25
+619
+250
+679
 pop-1-n-of-agents-for-each-strategy
-[200 100 100 100]
+[100 100 100 100 100 100]
 1
 0
 String (reporter)
 
 SWITCH
-275
-341
-463
-374
+287
+346
+475
+379
 use-prob-revision?
 use-prob-revision?
 1
@@ -1232,29 +1231,29 @@ use-prob-revision?
 -1000
 
 SLIDER
-276
-528
-471
-561
+286
+534
+481
+567
 plot-every-?-secs
 plot-every-?-secs
 0.01
 5
-0.1
+0.05
 0.01
 1
 NIL
 HORIZONTAL
 
 SLIDER
-276
-415
-463
-448
+288
+420
+475
+453
 n-of-revisions-per-tick
 n-of-revisions-per-tick
 1
-(max list pop-1-n-of-agents pop-2-n-of-agents)
+pop-1-n-of-agents + pop-2-n-of-agents
 50.0
 1
 1
@@ -1262,9 +1261,9 @@ NIL
 HORIZONTAL
 
 MONITOR
-809
+808
 10
-930
+929
 55
 NIL
 ticks-per-second
@@ -1273,10 +1272,10 @@ ticks-per-second
 11
 
 SWITCH
-750
-340
-932
-373
+748
+346
+930
+379
 complete-matching?
 complete-matching?
 1
@@ -1284,10 +1283,10 @@ complete-matching?
 -1000
 
 SLIDER
-749
-393
-932
-426
+747
+399
+930
+432
 n-of-trials
 n-of-trials
 1
@@ -1299,35 +1298,35 @@ NIL
 HORIZONTAL
 
 SLIDER
-521
-407
-702
-440
+519
+413
+700
+446
 pop-1-n-in-test-set
 pop-1-n-in-test-set
 2
-pop-1-max-size-of-test-set
-4.0
+pop-1-max-n-in-test-set
+6.0
 1
 1
 NIL
 HORIZONTAL
 
 TEXTBOX
-725
-668
-780
-686
+743
+670
+798
+688
 for logit:
 11
 0.0
 1
 
 SLIDER
-725
-684
-876
-717
+740
+686
+891
+719
 eta
 eta
 0.001
@@ -1339,34 +1338,34 @@ NIL
 HORIZONTAL
 
 CHOOSER
-723
-621
-875
-666
+740
+623
+892
+668
 tie-breaker
 tie-breaker
 "stick-uniform" "stick-min" "uniform" "min" "random-walk"
 3
 
 TEXTBOX
-725
-604
-858
-622
+742
+606
+875
+624
 for best:
 11
 0.0
 1
 
 SLIDER
-518
-499
-736
-532
+516
+505
+734
+538
 pop-1-n-to-consider-imitating
 pop-1-n-to-consider-imitating
 1
-pop-1-max-number-to-consider-imitating
+pop-1-max-n-to-consider-imitating
 1.0
 1
 1
@@ -1374,30 +1373,30 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-522
-484
-703
-503
+520
+490
+701
+509
 for imitative & (best or logit):
 11
 0.0
 1
 
 TEXTBOX
-523
-391
-674
-409
+521
+397
+672
+415
 for direct & (best or logit):
 11
 0.0
 1
 
 SLIDER
-29
-925
-237
-958
+27
+938
+235
+971
 random-walk-speed
 random-walk-speed
 0
@@ -1409,72 +1408,72 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-30
-910
-290
-929
+28
+923
+288
+942
 for best & random-walk tie-breaker:
 11
 0.0
 1
 
 CHOOSER
-520
-340
-687
-385
+518
+346
+685
+391
 candidate-selection
 candidate-selection
 "imitative" "direct"
 1
 
 CHOOSER
-563
-611
-714
-656
+561
+613
+712
+658
 decision-method
 decision-method
 "best" "logit" "proportional"
 0
 
 TEXTBOX
-749
-432
-959
-462
+747
+438
+923
+468
 for complete-matching=off \n     & direct:
 11
 0.0
 1
 
 SWITCH
-775
-466
-932
-499
+773
+472
+930
+505
 single-sample?
 single-sample?
-1
+0
 1
 -1000
 
 SWITCH
-28
-783
-234
-816
+26
+796
+232
+829
 trials-with-replacement?
 trials-with-replacement?
-1
+0
 1
 -1000
 
 SWITCH
-29
-835
-245
-868
+27
+848
+243
+881
 imitatees-with-replacement?
 imitatees-with-replacement?
 0
@@ -1482,10 +1481,10 @@ imitatees-with-replacement?
 -1000
 
 SWITCH
-29
-873
-246
-906
+27
+886
+244
+919
 consider-imitating-self?
 consider-imitating-self?
 0
@@ -1493,10 +1492,10 @@ consider-imitating-self?
 -1000
 
 PLOT
-275
-733
+265
+730
 593
-853
+858
 Pop. 1: Strategies' exp. payoff (recent history)
 milliseconds
 NIL
@@ -1510,10 +1509,10 @@ true
 PENS
 
 PLOT
-596
-733
-939
-853
+595
+730
+929
+858
 Pop. 1: Strategies' exp. payoff (complete history)
 seconds
 NIL
@@ -1527,9 +1526,9 @@ true
 PENS
 
 BUTTON
-330
+329
 10
-490
+489
 43
 load parameters from file
 load-parameter-file
@@ -1544,9 +1543,9 @@ NIL
 1
 
 BUTTON
-500
+499
 10
-647
+646
 43
 save parameters to file
 save-parameter-file
@@ -1561,150 +1560,150 @@ NIL
 1
 
 TEXTBOX
-29
-820
-220
-838
+27
+833
+218
+851
 for imitative:\n
 11
 0.0
 1
 
 TEXTBOX
-751
-377
-918
-395
+749
+383
+916
+401
 for complete-matching=off:
 11
 0.0
 1
 
 TEXTBOX
-254
-319
-496
-351
+266
+324
+508
+356
 Assignment of revision opportunities
 13
 13.0
 1
 
 TEXTBOX
-812
-319
-885
-337
+810
+325
+883
+343
 Matching
 13
 13.0
 1
 
 TEXTBOX
-541
-319
-691
-337
+539
+325
+689
+343
 Candidate selection
 13
 13.0
 1
 
 TEXTBOX
-563
-668
-713
-686
+561
+670
+711
+688
 mutations:
 11
 0.0
 1
 
 TEXTBOX
-657
-583
-787
-601
+675
+586
+805
+604
 Decision method
 13
 13.0
 1
 
 TEXTBOX
-62
-318
-212
-336
+60
+324
+210
+342
 Game and population
 13
 13.0
 1
 
 TEXTBOX
-316
-508
-434
-526
+326
+514
+444
+532
 Plotting of output
 12
 0.0
 1
 
 TEXTBOX
-30
-768
-211
-786
+28
+781
+209
+799
 for complete-matching=off:
 11
 0.0
 1
 
 TEXTBOX
-26
-744
-265
-762
+24
+757
+243
+775
 ---------------------------------------\n
 11
 0.0
 1
 
 INPUTBOX
-27
-677
-252
-737
+25
+683
+250
+743
 pop-2-n-of-agents-for-each-strategy
-[100 200 100 100]
+[100 100 100 100 100 100]
 1
 0
 String (reporter)
 
 SLIDER
-521
-443
-702
-476
+519
+449
+700
+482
 pop-2-n-in-test-set
 pop-2-n-in-test-set
 2
-pop-2-max-size-of-test-set
-4.0
+pop-2-max-n-in-test-set
+6.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-518
-534
-736
-567
+516
+540
+734
+573
 pop-2-n-to-consider-imitating
 pop-2-n-to-consider-imitating
 1
-pop-2-max-number-to-consider-imitating
+pop-2-max-n-to-consider-imitating
 1.0
 1
 1
@@ -1712,14 +1711,14 @@ NIL
 HORIZONTAL
 
 SLIDER
-28
-495
-225
-528
+26
+501
+223
+534
 pop-1-n-of-agents
 pop-1-n-of-agents
 1
-1000
+2000
 500.0
 1
 1
@@ -1727,14 +1726,14 @@ NIL
 HORIZONTAL
 
 SLIDER
-28
-531
-225
-564
+26
+537
+223
+570
 pop-2-n-of-agents
 pop-2-n-of-agents
 1
-1000
+2000
 500.0
 1
 1
@@ -1742,10 +1741,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-28
-572
-245
-605
+26
+578
+243
+611
 random-initial-condition?
 random-initial-condition?
 0
@@ -1756,7 +1755,7 @@ PLOT
 25
 187
 469
-311
+317
 Pop. 2: Strategy distributions (recent history)
 milliseconds
 NIL
@@ -1773,7 +1772,7 @@ PLOT
 475
 187
 931
-311
+317
 Pop. 2: Strategy distributions (complete history)
 seconds
 NIL
@@ -1787,10 +1786,10 @@ true
 PENS
 
 PLOT
-275
-855
+265
+860
 593
-975
+989
 Pop. 2: Strategies' exp. payoff (recent history)
 milliseconds
 NIL
@@ -1804,10 +1803,10 @@ true
 PENS
 
 PLOT
-596
-855
-939
-975
+595
+860
+929
+988
 Pop. 2: Strategies' exp. payoff (complete history)
 seconds
 NIL

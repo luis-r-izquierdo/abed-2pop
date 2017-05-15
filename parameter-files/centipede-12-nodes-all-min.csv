@@ -1,0 +1,29 @@
+payoff-matrix,"[ [[ 0 0][0 0][0 0][0 0][0  0][0 0]] [[-1 3][2 2][2 2][2 2][2  2][2 2]] [[-1 3][1 5][4 4][4 4][4  4][4 4]] [[-1 3][1 5][3 7][6 6][6  6][6 6]] [[-1 3][1 5][3 7][5 9][8  8][8 8]] [[-1 3][1 5][3 7][5 9][7 11][10 10]]]"
+pop-1-n-of-agents,500
+pop-2-n-of-agents,500
+random-initial-condition?,true
+pop-1-n-of-agents-for-each-strategy,"[100 100 100 100 100 100]"
+pop-2-n-of-agents-for-each-strategy,"[100 100 100 100 100 100]"
+use-prob-revision?,false
+prob-revision,0.001
+n-of-revisions-per-tick,50
+candidate-selection,"direct"
+pop-1-n-in-test-set,6
+pop-2-n-in-test-set,6
+pop-1-n-to-consider-imitating,1
+pop-2-n-to-consider-imitating,1
+complete-matching?,false
+n-of-trials,1
+single-sample?,false
+decision-method,"best"
+prob-mutation,0
+tie-breaker,"min"
+eta,0.001
+random-walk-speed,1
+trials-with-replacement?,true
+imitatees-with-replacement?,true
+consider-imitating-self?,true
+plot-every-?-secs,0.05
+duration-of-recent,20
+show-recent-history?,true
+show-complete-history?,true

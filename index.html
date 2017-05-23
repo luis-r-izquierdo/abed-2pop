@@ -194,14 +194,14 @@
                         <h3 class="panel-title">Specifying how payoffs are computed</h3>
                      </div>
                      <div class="panel-body">
-                        <p>There are parameters to specify:
-                           <ul>
-                              <li>the
-                                 <parameter>n-of-trials</parameter> agents make, and</li>
-                              <li>whether these are conducted with or without replacement (
-                                 <parameter>trials-with-replacement?</parameter> ).</li>
-                           </ul>
-                        </p>
+                        <p>There are parameters to specify: </p>
+                        <ul>
+                           <li>the
+                              <parameter>n-of-trials</parameter> agents make, and</li>
+                           <li>whether these are conducted with or without replacement (
+                              <parameter>trials-with-replacement?</parameter> ).</li>
+                        </ul>
+
                      </div>
                   </div>
 
@@ -255,17 +255,16 @@
                         <h3 class="panel-title">Imitative protocols: Specifying how to compile the set of potential imitatees </h3>
                      </div>
                      <div class="panel-body">
-                        <p>There are parameters to specify:
-                           <ul>
-                              <li>the number of agents that revising agents will consider imitating (
-                                 <parameter>pop-1-n-to-consider-imitating</parameter> and
-                                 <parameter>pop-2-n-to-consider-imitating</parameter> ),</li>
-                              <li>whether these are selected with or without replacement (
-                                 <parameter>imitatees-with-replacement?</parameter> ), and</li>
-                              <li>whether agents may imitate themselves or not (
-                                 <parameter>consider-imitating-self?</parameter> ).</li>
-                           </ul>
-                        </p>
+                        <p>There are parameters to specify: </p>
+                        <ul>
+                           <li>the number of agents that revising agents will consider imitating (
+                              <parameter>pop-1-n-to-consider-imitating</parameter> and
+                              <parameter>pop-2-n-to-consider-imitating</parameter> ),</li>
+                           <li>whether these are selected with or without replacement (
+                              <parameter>imitatees-with-replacement?</parameter> ), and</li>
+                           <li>whether agents may imitate themselves or not (
+                              <parameter>consider-imitating-self?</parameter> ).</li>
+                        </ul>
                      </div>
                   </div>
                </div>
@@ -279,9 +278,10 @@
                   <div class="subsection">
                      <h2 style="text-align:right">Direct Protocols</h2>
                   </div>
-                  In contrast, under
-                  <value>direct</value> protocols, revising agents choose candidate strategies directly, so a strategy's popularity does not directly influence the probability with which it is considered. Specifically, the revising agent considers a set of strategies (including his own), tests them, and selects one of them according to one of various possible
-                  <parameter>decision-method</parameter>s (see below).
+                  <p>
+                     In contrast, under
+                     <value>direct</value> protocols, revising agents choose candidate strategies directly, so a strategy's popularity does not directly influence the probability with which it is considered. Specifically, the revising agent considers a set of strategies (including his own), tests them, and selects one of them according to one of various possible
+                     <parameter>decision-method</parameter>s (see below).
 
 
                   </p>
@@ -293,15 +293,15 @@
                         <h3 class="panel-title">Direct protocols: Specifying how to test strategies</h3>
                      </div>
                      <div class="panel-body">
-                        <p>There are parameters to specify:
-                           <ul>
-                              <li>the number of strategies that revising agents consider, including their current strategy (
-                                 <parameter>pop-1-n-in-test-set</parameter> and
-                                 <parameter>pop-2-n-in-test-set</parameter> ), </li>
-                              <li>whether the strategies in the test-set are compared according to a payoff computed using one single sample of counterparts from the other population (i.e. the same set of counterparts for every strategy), or whether the payoff of each strategy in the test-set is computed using a freshly drawn random sample of counterparts (
-                                 <parameter>single-sample?</parameter> ).</li>
-                           </ul>
-                        </p>
+                        <p>There are parameters to specify:</p>
+                        <ul>
+                           <li>the number of strategies that revising agents consider, including their current strategy (
+                              <parameter>pop-1-n-in-test-set</parameter> and
+                              <parameter>pop-2-n-in-test-set</parameter> ), </li>
+                           <li>whether the strategies in the test-set are compared according to a payoff computed using one single sample of counterparts from the other population (i.e. the same set of counterparts for every strategy), or whether the payoff of each strategy in the test-set is computed using a freshly drawn random sample of counterparts (
+                              <parameter>single-sample?</parameter> ).</li>
+                        </ul>
+
                      </div>
                   </div>
                </div>
@@ -310,41 +310,41 @@
                   <div class="subsection">
                      <h2>Decision methods</h2>
                   </div>
-                  <p>
-                     <p>A
-                        <parameter>decision-method</parameter> is a procedure that singles out:
-                        <ul>
-                           <li>one particular agent out of a set of candidates, whose strategy will be adopted by the revising agent (in
-                              <value>imitative</value> protocols), or</li>
-                           <li>one particular strategy out of a set of candidate strategies, which will be adopted by the revising agent (in
-                              <value>direct</value> protocols).</li>
-                        </ul>
-                     </p>
-                     <p>The selection is based on the payoff obtained by each of the candidates (agents or strategies) in the input set. In
-                        <value>imitative</value> protocols the set of candidates is formed by the set of (
-                        <parameter>pop-1-n-to-consider-imitating</parameter> or
-                        <parameter>pop-2-n-to-consider-imitating</parameter> ) potential imitatees previously compiled plus the revising agent himself. In
-                        <value>direct</value> protocols the set of candidates is the set of (
-                        <parameter>pop-1-n-in-test-set</parameter> or
-                        <parameter>pop-2-n-in-test-set</parameter> ) strategies previously compiled, which always includes the revising agent's strategy. <i>Abed-2-pop</i> implements three different
-                        <parameter>decision-method</parameter>s:</p>
-                     <ul>
-                        <li>
-                           <value>best</value>: The candidate with the highest payoff is selected. Ties are resolved according to the procedure indicated with parameter
-                           <parameter>tie-breaker</parameter>.
-                        </li>
-                        <li>
-                           <value>logit</value>: A random weighted choice is conducted among the candidates. The weight for each candidate is <i>e</i><sup>(<i>payoff</i> / <parameter>eta</parameter>)</sup>.
-                        </li>
-                        <li>
-                           <value>proportional</value>: In this method the set of candidates contains two elements only: the one corresponding to the revising agent's own strategy (or to himself in
-                           <value>imitative</value> protocols) and another one. Then, the revising agent adopts the other candidate's strategy only if the other candidate's payoff is higher than his own, and he does so with probability proportional to the payoff difference.
-                        </li>
-                     </ul>
+
+                  <p>A
+                     <parameter>decision-method</parameter> is a procedure that singles out:</p>
+                  <ul>
+                     <li>one particular agent out of a set of candidates, whose strategy will be adopted by the revising agent (in
+                        <value>imitative</value> protocols), or</li>
+                     <li>one particular strategy out of a set of candidate strategies, which will be adopted by the revising agent (in
+                        <value>direct</value> protocols).</li>
+                  </ul>
+
+                  <p>The selection is based on the payoff obtained by each of the candidates (agents or strategies) in the input set. In
+                     <value>imitative</value> protocols the set of candidates is formed by the set of (
+                     <parameter>pop-1-n-to-consider-imitating</parameter> or
+                     <parameter>pop-2-n-to-consider-imitating</parameter> ) potential imitatees previously compiled plus the revising agent himself. In
+                     <value>direct</value> protocols the set of candidates is the set of (
+                     <parameter>pop-1-n-in-test-set</parameter> or
+                     <parameter>pop-2-n-in-test-set</parameter> ) strategies previously compiled, which always includes the revising agent's strategy. <i>Abed-2-pop</i> implements three different
+                     <parameter>decision-method</parameter>s:</p>
+                  <ul>
+                     <li>
+                        <value>best</value>: The candidate with the highest payoff is selected. Ties are resolved according to the procedure indicated with parameter
+                        <parameter>tie-breaker</parameter>.
+                     </li>
+                     <li>
+                        <value>logit</value>: A random weighted choice is conducted among the candidates. The weight for each candidate is <i>e</i><sup>(<i>payoff</i> / <parameter>eta</parameter>)</sup>.
+                     </li>
+                     <li>
+                        <value>proportional</value>: In this method the set of candidates contains two elements only: the one corresponding to the revising agent's own strategy (or to himself in
+                        <value>imitative</value> protocols) and another one. Then, the revising agent adopts the other candidate's strategy only if the other candidate's payoff is higher than his own, and he does so with probability proportional to the payoff difference.
+                     </li>
+                  </ul>
 
 
 
-                  </p>
+
                </div>
 
             </div>
@@ -781,7 +781,7 @@
             <div id="license" class="section">
                <h1>License</h1>
                <br>
-               <p><strong>Abed-2-pop</strong> (<strong>A</strong>gent-<strong>B</strong>ased <strong>E</strong>volutionary <strong>D</strong>ynamics with <strong>2 pop</strong> ulations) is a modeling framework designed to simulate the evolution of two populations of agents who play a 2-player game. Agents in one population play the game with agents in the other population. Every agent is occasionally given the opportunity to revise his strategy.</p>
+               <p><strong>Abed-2-pop</strong> (<strong>A</strong>gent-<strong>B</strong>ased <strong>E</strong>volutionary <strong>D</strong>ynamics with <strong>2 pop</strong>ulations) is a modeling framework designed to simulate the evolution of two populations of agents who play a 2-player game. Agents in one population play the game with agents in the other population. Every agent is occasionally given the opportunity to revise his strategy.</p>
                <p>Copyright (C) 2017 <a target="_blank" href="http://luis.izqui.org">Luis R. Izquierdo</a>, <a target="_blank" href="http://segis.izqui.org">Segismundo S. Izquierdo</a> &amp; <a target="_blank" href="http://www.ssc.wisc.edu/~whs/">Bill Sandholm</a>
                </p>
                <p>This program is free software; you can redistribute it and/or modify it under the terms of the <a target="_blank" href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a> as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.</p>
@@ -862,6 +862,7 @@
                      </ul>
                   </div>
                   <!--/.nav-collapse -->
+               </nav>
             </div>
          </div>
 

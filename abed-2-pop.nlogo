@@ -530,6 +530,7 @@ to update-payoffs-of-strategy-agents [strategy-set]
 
   ifelse complete-matching?
   [
+    ;; we have executed "update-strategies-payoffs" in "go" just before initiating revisions, so we're good.
     let strategies-payoffs (ifelse-value (my-pop-number = 1) [pop-1-strategies-payoffs][pop-2-strategies-payoffs])
     ask strategy-set [ set payoff item (strategy - 1) strategies-payoffs  ]
   ]

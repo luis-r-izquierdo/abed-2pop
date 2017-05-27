@@ -4,3 +4,5 @@ ABED-2-pop is a modeling framework designed to simulate the evolution of two pop
 Abed-2-pop is implemented in [NetLogo](http://ccl.northwestern.edu/netlogo/) and fully explained at [this website](https://luis-r-izquierdo.github.io/abed-2-pop/).
 
 [Luis R. Izquierdo](http://luis.izqui.org), [Segismundo S. Izquierdo](http://segis.izqui.org) & [Bill Sandholm](http://www.ssc.wisc.edu/~whs/)
+
+P.S. You may also be interested in [abed-1-pop](https://luis-r-izquierdo.github.io/abed-1-pop/)

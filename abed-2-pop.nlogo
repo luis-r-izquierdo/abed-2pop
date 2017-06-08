@@ -67,6 +67,10 @@ globals [
   ;; for proportional
   pop-1-rate-scaling
   pop-2-rate-scaling
+  pop-1-max-column-difference-payoffs   ;; for efficiency
+  pop-1-max-min-payoffs                 ;; for efficiency
+  pop-2-max-column-difference-payoffs   ;; for efficiency
+  pop-2-max-min-payoffs                 ;; for efficiency
 
   pop-1-max-n-in-test-set ;; for direct protocols
   pop-2-max-n-in-test-set ;; for direct protocols
@@ -280,6 +284,9 @@ to setup-dynamics
   ;; RULE USED TO SELECT AMONG DIFFERENT CANDIDATES
   set follow-rule runresult (word "[ [] -> " decision-method " ]")
 
+  ;; UPDATE RATE-SCALING
+  if decision-method = "proportional" [update-rate-scalings]
+
   ;; TIE-BREAKER
   set tie-winner-in runresult (word "[ [x] -> " tie-breaker " x ]")
 
@@ -323,6 +330,17 @@ to setup-dynamics
 
 end
 
+to update-rate-scalings
+  ifelse (complete-matching? or (single-sample? and candidate-selection = "direct"))
+    [
+      set pop-1-rate-scaling pop-1-max-column-difference-payoffs
+      set pop-2-rate-scaling pop-2-max-column-difference-payoffs
+    ]
+    [
+      set pop-1-rate-scaling pop-1-max-min-payoffs
+      set pop-2-rate-scaling pop-2-max-min-payoffs
+    ]
+end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Run-time procedures ;;;
@@ -417,8 +435,11 @@ to setup-payoffs
     set pop-1-strategy-numbers (range 1 (pop-1-n-of-strategies + 1))
     set pop-2-strategy-numbers (range 1 (pop-2-n-of-strategies + 1))
 
-    set pop-1-rate-scaling max-column-difference pop-1-payoff-matrix
-    set pop-2-rate-scaling max-column-difference pop-2-payoff-matrix
+    set pop-1-max-column-difference-payoffs max-column-difference pop-1-payoff-matrix
+    set pop-2-max-column-difference-payoffs max-column-difference pop-2-payoff-matrix
+    set pop-1-max-min-payoffs max-min-of-matrix pop-1-payoff-matrix
+    set pop-2-max-min-payoffs max-min-of-matrix pop-2-payoff-matrix
+    update-rate-scalings
 
   ] [print error-message]
 end
@@ -775,6 +796,11 @@ end
 
 to-report max-row-difference [m]
   report max n-values (length m) [ [n] -> max (item n m) - min (item n m)]
+end
+
+to-report max-min-of-matrix [m]
+  let all-elements reduce sentence m
+  report (max all-elements - min all-elements)
 end
 
 to-report transpose-of [m]

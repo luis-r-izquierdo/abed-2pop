@@ -2,8 +2,8 @@
 ;;; GNU GENERAL PUBLIC LICENSE ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; ABED-2-pop
-;; ABED-2-pop (Agent-Based Evolutionary Dynamics with 2 populations)
+;; ABED-2pop
+;; ABED-2pop (Agent-Based Evolutionary Dynamics with 2 populations)
 ;; is a modeling framework designed to simulate the evolution of two
 ;; populations of agents who play a 2-player game. Agents in one population
 ;; play the game against agents in the other population. Every agent is

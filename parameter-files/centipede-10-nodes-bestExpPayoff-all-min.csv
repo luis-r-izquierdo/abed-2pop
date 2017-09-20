@@ -16,7 +16,7 @@ complete-matching?,false
 n-of-trials,1
 single-sample?,false
 decision-method,"best"
-prob-mutation,0
+prob-mutation,0.001
 tie-breaker,"min"
 eta,0.001
 random-walk-speed,1

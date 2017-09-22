@@ -257,6 +257,8 @@ to setup-strategy-agents
 end
 
 to setup-dynamics
+  ;; CHECK PAYOFFS
+  if decision-method = "positive-proportional" [ check-all-payoffs-are-non-negative ]
 
   ;; SELECT YOUR NEXT STRATEGY DIRECTLY, OR VIA IMITATION
   ifelse (candidate-selection = "direct")
@@ -432,6 +434,8 @@ to setup-payoffs
     set pop-1-n-of-strategies length pop-1-payoff-matrix
     set pop-2-n-of-strategies length pop-2-payoff-matrix
 
+    if decision-method = "positive-proportional" [ check-all-payoffs-are-non-negative ]
+
     set pop-1-strategy-numbers (range 1 (pop-1-n-of-strategies + 1))
     set pop-2-strategy-numbers (range 1 (pop-2-n-of-strategies + 1))
 
@@ -458,6 +462,50 @@ to do-payoff-checks [ matrix n-of-agents-for-each-strategy ]
   if length filter [ [x] -> x < 0] initial-distribution > 0 [
     user-message (word "All numbers in " initial-distribution "\nshould be non-negative numbers")
   ]
+end
+
+to check-all-payoffs-are-non-negative
+  let any-changes? false
+
+  if min reduce sentence pop-1-payoff-matrix < 0 [
+    user-message (word
+      "Since you are using decision-method = positive-proportional, all elements in the payoff matrix\n"
+      put-sublists-in-different-lines-simple (word pop-1-payoff-matrix)
+      "\nfor population 1 should be non-negative numbers.")
+    if user-yes-or-no? (word
+        "Would you like to add the minimum value to all elements in the payoff matrix for population 1?\n"
+        put-sublists-in-different-lines-simple (word pop-1-payoff-matrix))
+      [
+        set pop-1-payoff-matrix make-elements-positive pop-1-payoff-matrix
+        set any-changes? true
+      ]
+  ]
+
+  if min reduce sentence pop-2-payoff-matrix < 0 [
+    user-message (word
+      "Since you are using decision-method = positive-proportional, all elements in the payoff matrix\n"
+      put-sublists-in-different-lines-simple (word pop-2-payoff-matrix)
+      "\nfor the population 2 should be non-negative numbers.")
+    if user-yes-or-no? (word
+        "Would you like to add the minimum value to all elements in the payoff matrix for population 2?\n"
+        put-sublists-in-different-lines-simple (word pop-2-payoff-matrix))
+      [
+        set pop-2-payoff-matrix make-elements-positive pop-2-payoff-matrix
+        set any-changes? true
+      ]
+  ]
+
+  if any-changes? [
+    set payoff-matrix put-sublists-in-different-lines (word (map [[l1 l2] -> (map list l1 l2)] pop-1-payoff-matrix (transpose-of pop-2-payoff-matrix)))
+  ]
+
+end
+
+to-report make-elements-positive [m]
+  let minimum min reduce sentence m
+  report ifelse-value (minimum < 0)
+    [ add-?-to-all-elements-of ( - minimum) m ]
+    [ m ]
 end
 
 to update-strategies-payoffs
@@ -827,6 +875,10 @@ to-report transpose-of [m]
   report mt
 end
 
+to-report add-?-to-all-elements-of [v m]
+  report map [[row] -> map [[el] -> v + el] row] m
+end
+
 ;;;;;;;;;;;;;
 ;;; Lists ;;;
 ;;;;;;;;;;;;;
@@ -989,6 +1041,23 @@ to-report position-of-second-closing-bracket [str]
   ]
 end
 
+to-report put-sublists-in-different-lines-simple [s]
+  let open-bracket-pos position "[" s
+  set s substring s (open-bracket-pos + 1) (length s)
+  let close-bracket-pos -1
+
+  let new-s "["
+
+  set open-bracket-pos position "[" s
+  while [open-bracket-pos != false] [
+    set close-bracket-pos position "]" s
+    set new-s (word new-s (substring s open-bracket-pos (close-bracket-pos + 1)) "\n ")
+    set s substring s (close-bracket-pos + 1) (length s)
+    set open-bracket-pos position "[" s
+  ]
+  report (word substring new-s 0 (length new-s - 2) "]")
+end
+
 ;; This procedure saves the parameters into a new file
 ;; or appends the data to an existing file
 to save-parameter-file
@@ -1102,7 +1171,7 @@ prob-mutation
 prob-mutation
 0
 1
-0.0
+0.001
 0.001
 1
 NIL

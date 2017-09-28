@@ -109,7 +109,7 @@ players-own [
 
   other-agents-in-my-pop
                ;; this agentset is useful to create the set of potential imitatees
-               ;; if consider-imitating-self? and imitatees-with-replacement?
+               ;; if not consider-imitating-self?
 
   counterparts ;; list with the agents to play with.
                ;; counterparts is a list rather than a set so we can deal with replacement.
@@ -273,7 +273,7 @@ to setup-dynamics
   set pop-2-max-n-in-test-set min list 10 pop-2-n-of-strategies
 
   ;; NUMBER OF AGENTS YOU WILL CONSIDER FOR IMITATION (ONLY RELEVANT IN IMITATIVE PROTOCOLS)
-  let correction-factor ifelse-value (consider-imitating-self? and imitatees-with-replacement?) [0][1]
+  let correction-factor ifelse-value consider-imitating-self? [0][1]
 
   let pop-1-max-value (pop-1-n-of-agents - correction-factor)
   set pop-1-n-to-consider-imitating min list pop-1-n-to-consider-imitating pop-1-max-value
@@ -314,21 +314,16 @@ to setup-dynamics
 
   ;; DO YOU SELECT THE AGENTS YOU ARE GOING TO PLAY WITH REPLACEMENT OR WITHOUT REPLACEMENT?
   ifelse trials-with-replacement?
-    [set update-counterparts [ [] -> update-counterparts-with-replacement ] ]
-    [set update-counterparts [ [] -> update-counterparts-without-replacement ] ]
+    [ set update-counterparts [ [] -> update-counterparts-with-replacement ] ]
+    [ set update-counterparts [ [] -> update-counterparts-without-replacement ] ]
 
   ifelse imitatees-with-replacement?
-    [set update-candidate-agents [ [] -> update-candidate-agents-with-replacement ] ]
-    [
-      set update-candidate-agents [ [] -> update-candidate-agents-without-replacement ]
-      set consider-imitating-self? false
-        ;; if there is no replacement, you cannot form part of the candidate strategies again
-        ;; (note that you always consider yourself)
-    ]
+    [ set update-candidate-agents [ [] -> update-candidate-agents-with-replacement ] ]
+    [ set update-candidate-agents [ [] -> update-candidate-agents-without-replacement ] ]
 
-  ifelse consider-imitating-self? and imitatees-with-replacement?
-    [ask players [ set potential-imitatees my-pop] ]
-    [ask players [ set potential-imitatees other-agents-in-my-pop] ]
+  ifelse consider-imitating-self?
+    [ ask players [ set potential-imitatees my-pop] ]
+    [ ask players [ set potential-imitatees other-agents-in-my-pop] ]
 
 end
 

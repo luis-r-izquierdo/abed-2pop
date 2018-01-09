@@ -750,8 +750,8 @@ to setup-graphs
     setup-miliseconds-graph (word "Pop. " pop ": Strategy distributions (recent history)") 1 pop
     setup-graph (word "Pop. " pop ": Strategy distributions (complete history)") 1 pop
 
-    setup-miliseconds-graph (word "Pop. " pop ": Strategies' exp. payoff (recent history)") 0 pop
-    setup-graph (word "Pop. " pop ": Strategies' exp. payoff (complete history)") 0 pop
+    setup-miliseconds-graph (word "Pop. " pop ": Strategies' exp. payoffs (recent history)") 0 pop
+    setup-graph (word "Pop. " pop ": Strategies' exp. payoffs (complete history)") 0 pop
   ]
   update-graphs
 end
@@ -795,7 +795,7 @@ to update-graphs
         plot-frequencies-?-at-? strategy-frequencies (1000 * second-to-plot) strategy-numbers
         fix-x-range
 
-      set-current-plot (word "Pop. " pop ": Strategies' exp. payoff (recent history)")
+      set-current-plot (word "Pop. " pop ": Strategies' exp. payoffs (recent history)")
         foreach strategy-numbers [ [s] ->
           set-current-plot-pen (word s)
           ;; set-plot-pen-interval plot-every-?-ticks
@@ -808,7 +808,7 @@ to update-graphs
       set-current-plot (word "Pop. " pop ": Strategy distributions (complete history)")
         plot-frequencies-?-at-? strategy-frequencies second-to-plot strategy-numbers
 
-      set-current-plot (word "Pop. " pop ": Strategies' exp. payoff (complete history)")
+      set-current-plot (word "Pop. " pop ": Strategies' exp. payoffs (complete history)")
         foreach strategy-numbers [ [s] ->
           set-current-plot-pen (word s)
           ;; set-plot-pen-interval plot-every-?-ticks
@@ -1138,7 +1138,7 @@ ticks
 INPUTBOX
 25
 347
-247
+251
 494
 payoff-matrix
 [\n [[ 0 0][0 0][0 0][0 0][0  0][0 0]]\n [[-1 3][2 2][2 2][2 2][2  2][2 2]]\n [[-1 3][1 5][4 4][4 4][4  4][4 4]]\n [[-1 3][1 5][3 7][6 6][6  6][6 6]]\n [[-1 3][1 5][3 7][5 9][8  8][8 8]]\n [[-1 3][1 5][3 7][5 9][7 11][10 10]]\n]
@@ -1315,7 +1315,7 @@ INPUTBOX
 250
 679
 pop-1-n-of-agents-for-each-strategy
-[100 100 100 100 100 100]
+[1000 0 0 0 0 0]
 1
 0
 String (reporter)
@@ -1597,7 +1597,7 @@ PLOT
 730
 593
 858
-Pop. 1: Strategies' exp. payoff (recent history)
+Pop. 1: Strategies' exp. payoffs (recent history)
 milliseconds
 NIL
 0.0
@@ -1612,9 +1612,9 @@ PENS
 PLOT
 595
 730
-929
+932
 858
-Pop. 1: Strategies' exp. payoff (complete history)
+Pop. 1: Strategies' exp. payoffs (complete history)
 seconds
 NIL
 0.0
@@ -1776,7 +1776,7 @@ INPUTBOX
 250
 743
 pop-2-n-of-agents-for-each-strategy
-[100 100 100 100 100 100]
+[1000 0 0 0 0 0]
 1
 0
 String (reporter)
@@ -1820,7 +1820,7 @@ pop-1-n-of-agents
 pop-1-n-of-agents
 1
 2000
-500.0
+1000.0
 1
 1
 NIL
@@ -1835,7 +1835,7 @@ pop-2-n-of-agents
 pop-2-n-of-agents
 1
 2000
-500.0
+1000.0
 1
 1
 NIL
@@ -1848,7 +1848,7 @@ SWITCH
 611
 random-initial-condition?
 random-initial-condition?
-0
+1
 1
 -1000
 
@@ -1891,7 +1891,7 @@ PLOT
 860
 593
 989
-Pop. 2: Strategies' exp. payoff (recent history)
+Pop. 2: Strategies' exp. payoffs (recent history)
 milliseconds
 NIL
 0.0
@@ -1906,9 +1906,9 @@ PENS
 PLOT
 595
 860
-929
+932
 988
-Pop. 2: Strategies' exp. payoff (complete history)
+Pop. 2: Strategies' exp. payoffs (complete history)
 seconds
 NIL
 0.0

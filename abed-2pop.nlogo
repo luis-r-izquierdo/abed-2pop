@@ -155,6 +155,15 @@ to startup
 
     setup-dynamics
 
+    if decision-method = "pairwise-difference" [
+      ifelse candidate-selection = "direct"
+      [set pop-1-n-in-test-set 2            set pop-2-n-in-test-set 2]
+      [set pop-1-n-to-consider-imitating 1  set pop-2-n-to-consider-imitating 1]
+    ]
+    ;; the code above is included here, outside setup-dynamics, because, at runtime,
+    ;; this code is best conducted within reporter pairwise-difference
+    ;; to avoid any errors
+
     update-ticks-per-second
     update-strategies-payoffs
 

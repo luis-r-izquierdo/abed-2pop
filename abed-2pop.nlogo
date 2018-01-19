@@ -1487,7 +1487,7 @@ TEXTBOX
 490
 701
 509
-for imitative & (best or logit):
+for imitative:
 11
 0.0
 1
@@ -1497,7 +1497,7 @@ TEXTBOX
 397
 672
 415
-for direct & (best or logit):
+for direct:
 11
 0.0
 1

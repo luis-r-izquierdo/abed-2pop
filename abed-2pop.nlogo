@@ -346,6 +346,15 @@ to update-rate-scalings
       set pop-1-rate-scaling pop-1-max-min-payoffs
       set pop-2-rate-scaling pop-2-max-min-payoffs
     ]
+  ;; The rationale is to set the value of pop-x-rate-scaling to the maximum value that payoff-diff can take
+  ;; in procedure pairwise-difference, so magnitude (payoff-diff / rate-scaling) can be interpreted as
+  ;; a probability that can reach the value of 1.
+  ;; If the two payoffs used to compute payoff-diff are calculated against the same sample
+  ;; (which occurs if (complete-matching? or (single-sample? and candidate-selection = "direct")),
+  ;; the maximum value that payoff-diff could take is the maximum possible difference in the payoff matrix, by columns.
+  ;; In any other case, in general, the maximum difference is the (max - min) over the whole payoff matrix.
+end
+
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -8,10 +8,8 @@ use-prob-revision?,false
 prob-revision,0.001
 n-of-revisions-per-tick,50
 candidate-selection,"direct"
-pop-1-n-in-test-set,2
-pop-2-n-in-test-set,2
-pop-1-n-to-consider-imitating,1
-pop-2-n-to-consider-imitating,1
+pop-1-n-of-candidates,2
+pop-2-n-of-candidates,2
 complete-matching?,false
 n-of-trials,1
 single-sample?,true

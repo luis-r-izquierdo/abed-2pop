@@ -217,54 +217,52 @@
 
 
                <div class="col-xs-12">
-                  <p>Agents are occasionally given the opportunity to revise their strategy. The specific protocol used by revising agents is determined by two parameters: </p>
+                  <p>Agents are occasionally given the opportunity to revise their strategy. The specific protocol used by revising agents is determined mainly by the following parameters: </p>
                   <ul>
                      <li>
                         <parameter>candidate-selection</parameter>, which indicates whether the protocol is
                         <value>imitative</value> or
-                        <value>direct</value> (PGED, p. 9), and
+                        <value>direct</value> (PGED, p. 9),
                      </li>
                      <li>
-                        <parameter>decision-method</parameter>, which can be
+                        <parameter>pop-<i>i</i>-n-of-candidates</parameter>, which determine the number of candidates (agents or strategies) that revising agents in population <i>i</i> will consider to update their strategy, and
+                     </li>
+                     <li>
+                        <parameter>decision-method</parameter>, which determines how to single out one instance out of the set of candidates. <i>Abed-2pop</i> implements the following methods:
                         <value>best</value>,
                         <value>logit</value>,
-                        <value>positive-proportional</value> or
+                        <value>positive-proportional</value> and
                         <value>pairwise-difference</value>.
                      </li>
                   </ul>
                   <p>We briefly explain the meaning of each of these terms below.</p>
                </div>
 
-               <div class="col-xs-12">
+               <div class="col-xs-12 col-sm-6">
                   <div class="subsection">
                      <h2>Imitative Protocols</h2>
                   </div>
-               </div>
-
-               <div class="col-xs-12 col-sm-6">
-
-                  <p>
-                     Under
-                     <value>imitative</value> protocols, agents observe what other agents in the same population are doing and their payoff, and then consider imitating one of them. How many agents the revising agent observes is determined by parameters
-                     <parameter>pop-1-n-to-consider-imitating</parameter> and
-                     <parameter>pop-2-n-to-consider-imitating</parameter> (for populations 1 and 2 respectively). The specific selection of potential imitatees is conducted randomly, so popular strategies in each population are more likely to be observed than less popular ones. After having observed some agents in the same population, the revising agent will use one of various possible
-                     <parameter>decision-method</parameter>s (see below) to decide whether to keep on using his strategy or, alternatively, to imitate one of the agents in the set of potential imitatees.</p>
+                  <p>Under
+                     <value>imitative</value> protocols, revising agents observe what other agents in the same population are doing and their payoff, and use this information to update their strategy. Specifically, revising agents in population <i>i</i> will compile a multiset of
+                     <parameter>pop-<i>i</i>-n-of-candidates</parameter> agents in their same population to copy the strategy of one of them. The revising agent is always part of this multiset of agents. The selection of the other (
+                     <parameter>pop-<i>i</i>-n-of-candidates</parameter> - 1 ) agents is conducted randomly, so popular strategies in the population are more likely to be observed than less popular ones. Once the multiset of candidate agents has been compiled, the revising agent will use one of various possible
+                     <parameter>decision-method</parameter>s (see below) to single out one of the candidates and copy his strategy.</p>
                </div>
 
                <div class="col-xs-12 col-sm-6">
                   <div class="panel panel-default">
                      <div class="panel-heading">
-                        <h3 class="panel-title">Imitative protocols: Specifying how to compile the set of potential imitatees </h3>
+                        <h3 class="panel-title">Imitative protocols: Specifying how to compile the set of candidate agents to copy</h3>
                      </div>
                      <div class="panel-body">
                         <p>There are parameters to specify: </p>
                         <ul>
-                           <li>the number of agents that revising agents will consider imitating (
-                              <parameter>pop-1-n-to-consider-imitating</parameter> and
-                              <parameter>pop-2-n-to-consider-imitating</parameter> ),</li>
-                           <li>whether these are selected with or without replacement (
+                           <li>the number of candidate agents that revising agents will consider to copy (
+                              <parameter>pop-1-n-of-candidates</parameter> and
+                              <parameter>pop-2-n-of-candidates</parameter> ),</li>
+                           <li>whether the selection of other candidates (besides the revising agent) is conducted with or without replacement (
                               <parameter>imitatees-with-replacement?</parameter> ), and</li>
-                           <li>whether agents may imitate themselves or not (
+                           <li>whether the selection of other candidates (besides the revising agent) considers the revising agent again or not (
                               <parameter>consider-imitating-self?</parameter> ).</li>
                         </ul>
                      </div>
@@ -282,7 +280,8 @@
                   </div>
                   <p>
                      In contrast, under
-                     <value>direct</value> protocols, revising agents choose candidate strategies directly, so a strategy's popularity does not directly influence the probability with which it is considered. Specifically, the revising agent considers a set of strategies (including his own), tests them, and selects one of them according to one of various possible
+                     <value>direct</value> protocols, revising agents choose candidate strategies directly, so a strategy's popularity does not directly influence the probability with which it is considered. Specifically, a revising agent in population <i>i</i> considers a set of
+                     <parameter>pop-<i>i</i>-n-of-candidates</parameter> strategies (including his own), tests them, and selects one of them according to one of various possible
                      <parameter>decision-method</parameter>s (see below).
 
 
@@ -298,9 +297,9 @@
                         <p>There are parameters to specify:</p>
                         <ul>
                            <li>the number of strategies that revising agents consider, including their current strategy (
-                              <parameter>pop-1-n-in-test-set</parameter> and
-                              <parameter>pop-2-n-in-test-set</parameter> ), </li>
-                           <li>whether the strategies in the test-set are compared according to a payoff computed using one single sample of counterparts from the other population (i.e. the same set of counterparts for every strategy), or whether the payoff of each strategy in the test-set is computed using a freshly drawn random sample of counterparts (
+                              <parameter>pop-1-n-of-candidates</parameter> and
+                              <parameter>pop-2-n-of-candidates</parameter> ), </li>
+                           <li>whether the strategies in the test set are compared according to a payoff computed using one single sample of counterparts from the other population (i.e. the same set of counterparts for every strategy), or whether the payoff of each strategy in the test set is computed using a freshly drawn random sample of counterparts (
                               <parameter>single-sample?</parameter> ).</li>
                         </ul>
 
@@ -323,12 +322,12 @@
                   </ul>
 
                   <p>The selection is based on the (average) payoff obtained by each of the candidates (agents or strategies) in the input set. In
-                     <value>imitative</value> protocols the set of candidates is formed by the set of (
-                     <parameter>pop-1-n-to-consider-imitating</parameter> or
-                     <parameter>pop-2-n-to-consider-imitating</parameter> ) potential imitatees previously compiled plus the revising agent himself. In
+                     <value>imitative</value> protocols the set of candidates is the multiset of (
+                     <parameter>pop-1-n-of-candidates</parameter> or
+                     <parameter>pop-2-n-of-candidates</parameter> ) agents previously compiled, which always includes the revising agent. In
                      <value>direct</value> protocols the set of candidates is the set of (
-                     <parameter>pop-1-n-in-test-set</parameter> or
-                     <parameter>pop-2-n-in-test-set</parameter> ) strategies previously compiled, which always includes the revising agent's strategy. <i>Abed-2pop</i> implements four different
+                     <parameter>pop-1-n-of-candidates</parameter> or
+                     <parameter>pop-2-n-of-candidates</parameter> ) strategies previously compiled, which always includes the revising agent's strategy. <i>Abed-2pop</i> implements four different
                      <parameter>decision-method</parameter>s:</p>
                   <ul>
                      <li>
@@ -562,8 +561,8 @@
 
                   <div class="tab-content clearfix">
                      <div class="tab-pane active" id="imitative">
-                        <p>The multiset of candidate agents contains the revising agent (which is always included) plus a sample of
-                           <parameter>pop-<i>i</i>-n-to-consider-imitating</parameter> elements from her population. Two parameters determine how this sample is taken:</p>
+                        <p>The multiset of candidate agents contains the revising agent (which is always included) plus a sample of (
+                           <parameter>pop-<i>i</i>-n-of-candidates</parameter> - 1 ) elements from his population. Two parameters determine how this sample is taken:</p>
                         <ul>
                            <li>
                               <parameter>imitatees-with-replacement?</parameter> indicates whether the sample is taken with or without replacement.</li>
@@ -575,8 +574,8 @@
                            <footer class="blockquote-footer">
 
                               To be sure, let <b>Sample(<i>n</i>, <i>p</i>, R)</b> denote a sample of
-                              <i>n</i> =
-                              <parameter>pop-<i>i</i>-n-to-consider-imitating</parameter> elements from population <i>p</i> with replacement. Similarly, let <b>Sample(<i>n</i>, <i>p</i>, NR)</b> denote the same sampling procedure, but without replacement. Finally, let P denote the revising agent's whole population. Using this notation, the multiset of candidate agents will be formed by
+                              <i>n</i> = (
+                              <parameter>pop-<i>i</i>-n-of-candidates</parameter> - 1 ) elements from population <i>p</i> with replacement. Similarly, let <b>Sample(<i>n</i>, <i>p</i>, NR)</b> denote the same sampling procedure, but without replacement. Finally, let P denote the revising agent's whole population. Using this notation, the multiset of candidate agents will be formed by
                               <ul>
                                  <li>reviser + Sample(<i>n</i>, P, R) ; if
                                     <parameter>imitatees-with-replacement?</parameter> =
@@ -605,7 +604,7 @@
                      </div>
                      <div class="tab-pane" id="direct">
                         <p>The set of candidate strategies contains the revising agent's own strategy plus (
-                           <parameter>n-in-test-set</parameter> - 1 ) other strategies, selected at random.
+                           <parameter>pop-<i>i</i>-n-of-candidates</parameter> - 1 ) other strategies, selected at random.
                         </p>
                      </div>
                   </div>
@@ -714,20 +713,9 @@
                      </div>
                      <div class="tab-pane" id="pairwise-difference">
                         <p>In
-                           <value>pairwise-difference</value>, the agent always considers exactly two candidates (one corresponding to his own strategy or to himself, and another one), i.e.:
+                           <value>pairwise-difference</value>, the agent always considers exactly two candidates (one corresponding to his own strategy or to himself, and another one), i.e., the value of
+                           <parameter>pop-<i>i</i>-n-of-candidates</parameter> is automatically set to 2.
                         </p>
-                        <ul>
-                           <li>If
-                              <parameter>candidate-selection</parameter> =
-                              <value>imitative</value>, the value of
-                              <parameter>pop-<i>i</i>-n-to-consider-imitating</parameter> is automatically set to 1.
-                           </li>
-                           <li>
-                              If
-                              <parameter>candidate-selection</parameter> =
-                              <value>direct</value>, the value of
-                              <parameter>pop-<i>i</i>-n-in-test-set</parameter> is automatically set to 2.</li>
-                        </ul>
 
                         <p>Let <i>candidate</i> denote the other agent or strategy. Then, the revising agent will consider adopting the <i>candidate</i>'s strategy only if the <i>candidate</i>'s payoff is higher than his own, and he will actually adopt it with probability proportional to the payoff difference. In order to turn the difference in payoffs into a meaningful probability, we divide the payoff difference by the maximum possible payoff difference that could occur in that population (i.e. the maximum payoff an agent in that role could ever get minus the minimum payoff he could ever obtain).</p>
 

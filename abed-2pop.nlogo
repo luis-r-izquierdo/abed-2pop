@@ -72,11 +72,8 @@ globals [
   pop-2-max-column-difference-payoffs   ;; for efficiency
   pop-2-max-min-payoffs                 ;; for efficiency
 
-  pop-1-max-n-in-test-set ;; for direct protocols
-  pop-2-max-n-in-test-set ;; for direct protocols
-
-  pop-1-max-n-to-consider-imitating ;; for imitative protocols
-  pop-2-max-n-to-consider-imitating ;; for imitative protocols
+  pop-1-max-n-of-candidates ;; for both direct and imitative protocols
+  pop-2-max-n-of-candidates ;; for both direct and imitative protocols
 
   pop-1-strategy-numbers ;; for efficiency
   pop-2-strategy-numbers ;; for efficiency
@@ -156,13 +153,12 @@ to startup
     setup-dynamics
 
     if decision-method = "pairwise-difference" [
-      ifelse candidate-selection = "direct"
-      [set pop-1-n-in-test-set 2            set pop-2-n-in-test-set 2]
-      [set pop-1-n-to-consider-imitating 1  set pop-2-n-to-consider-imitating 1]
+      set pop-1-n-of-candidates 2
+      set pop-2-n-of-candidates 2
     ]
-    ;; the code above is included here, outside setup-dynamics, because, at runtime,
-    ;; this code is best conducted within reporter pairwise-difference
-    ;; to avoid any errors
+    ;; the lines above are included here, rather than in setup-dynamics, because,
+    ;; at runtime, this code is best executed within reporter pairwise-difference,
+    ;; just before pop-X-n-to-consider is used, to avoid any runtime errors.
 
     update-ticks-per-second
     update-strategies-payoffs
@@ -274,23 +270,20 @@ to setup-dynamics
     [ set update-candidates-and-payoffs [ [] -> update-candidate-strategies-and-payoffs ] ]
     [ set update-candidates-and-payoffs [ [] -> update-candidate-agents-and-payoffs ] ]
 
-  ;; NUMBER OF STRATEGIES YOU WILL TEST (ONLY RELEVANT IN DIRECT PROTOCOLS)
-  set pop-1-n-in-test-set min list pop-1-n-in-test-set pop-1-n-of-strategies
-  set pop-1-max-n-in-test-set min list 10 pop-1-n-of-strategies
-
-  set pop-2-n-in-test-set min list pop-2-n-in-test-set pop-2-n-of-strategies
-  set pop-2-max-n-in-test-set min list 10 pop-2-n-of-strategies
-
-  ;; NUMBER OF AGENTS YOU WILL CONSIDER FOR IMITATION (ONLY RELEVANT IN IMITATIVE PROTOCOLS)
-  let correction-factor ifelse-value consider-imitating-self? [0][1]
-
-  let pop-1-max-value (pop-1-n-of-agents - correction-factor)
-  set pop-1-n-to-consider-imitating min list pop-1-n-to-consider-imitating pop-1-max-value
-  set pop-1-max-n-to-consider-imitating min list 10 pop-1-max-value
-
-  let pop-2-max-value (pop-2-n-of-agents - correction-factor)
-  set pop-2-n-to-consider-imitating min list pop-2-n-to-consider-imitating pop-2-max-value
-  set pop-2-max-n-to-consider-imitating min list 10 pop-2-max-value
+  ;; NUMBER OF CANDIDATES REVISING AGENTS WILL CONSIDER
+  ifelse (candidate-selection = "direct")
+    [ ;; in direct protocols, candidates are strategies
+      set pop-1-max-n-of-candidates pop-1-n-of-strategies
+      set pop-2-max-n-of-candidates pop-2-n-of-strategies
+    ]
+    [ ;; in imitative protocols, candidates are agents
+      let correction-factor ifelse-value consider-imitating-self? [1][0]
+      set pop-1-max-n-of-candidates (pop-1-n-of-agents + correction-factor)
+      set pop-2-max-n-of-candidates (pop-2-n-of-agents + correction-factor)
+        ;; remember that the revising agent is always part of the set of candidates
+    ]
+  set pop-1-n-of-candidates min list pop-1-n-of-candidates pop-1-max-n-of-candidates
+  set pop-2-n-of-candidates min list pop-2-n-of-candidates pop-2-max-n-of-candidates
 
   ;; RULE USED TO SELECT AMONG DIFFERENT CANDIDATES
   set follow-rule runresult (word "[ [] -> " decision-method " ]")
@@ -588,18 +581,18 @@ to update-candidate-agents-and-payoffs
 end
 
 to update-candidate-agents-with-replacement
-  set candidates (fput self (n-values (ifelse-value (my-pop-number = 1) [pop-1-n-to-consider-imitating][pop-2-n-to-consider-imitating]) [one-of potential-imitatees]))
+  set candidates (fput self (n-values (ifelse-value (my-pop-number = 1) [pop-1-n-of-candidates - 1][pop-2-n-of-candidates - 1]) [one-of potential-imitatees]))
 end
 
 to update-candidate-agents-without-replacement
-  set candidates (fput self (n-of (ifelse-value (my-pop-number = 1) [pop-1-n-to-consider-imitating][pop-2-n-to-consider-imitating]) potential-imitatees))
+  set candidates (fput self (n-of (ifelse-value (my-pop-number = 1) [pop-1-n-of-candidates - 1][pop-2-n-of-candidates - 1]) potential-imitatees))
 end
 
 to update-candidate-strategies-and-payoffs
   let my-strategy-agent one-of (strategy-agents with [strategy = [strategy] of myself and my-pop-number = [my-pop-number] of myself])
   set candidates (turtle-set
     my-strategy-agent
-    n-of ((ifelse-value (my-pop-number = 1) [pop-1-n-in-test-set][pop-2-n-in-test-set]) - 1)
+    n-of ((ifelse-value (my-pop-number = 1) [pop-1-n-of-candidates][pop-2-n-of-candidates]) - 1)
      (strategy-agents with [strategy != [strategy] of myself and my-pop-number = [my-pop-number] of myself])
   )
   ;; here candidates is an agentset (which contains strategy-agents)
@@ -665,9 +658,8 @@ to pairwise-difference
     ;; rate-scaling is zero only if the whole payoff matrix is 0s.
     ;; In that case there is nothing to do here.
 
-    ifelse candidate-selection = "direct"
-      [set pop-1-n-in-test-set 2            set pop-2-n-in-test-set 2]
-      [set pop-1-n-to-consider-imitating 1  set pop-2-n-to-consider-imitating 1]
+    set pop-1-n-of-candidates 2
+    set pop-2-n-of-candidates 2
     run update-candidates-and-payoffs
 
     let sorted-candidates sort-on [payoff] (turtle-set candidates)
@@ -970,10 +962,8 @@ to setup-list-of-parameters
     "prob-revision"
     "n-of-revisions-per-tick"
     "candidate-selection"
-    "pop-1-n-in-test-set"
-    "pop-2-n-in-test-set"
-    "pop-1-n-to-consider-imitating"
-    "pop-2-n-to-consider-imitating"
+    "pop-1-n-of-candidates"
+    "pop-2-n-of-candidates"
     "complete-matching?"
     "n-of-trials"
     "single-sample?"
@@ -1178,10 +1168,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-550
-683
-707
-716
+549
+649
+706
+682
 prob-mutation
 prob-mutation
 0
@@ -1415,14 +1405,14 @@ NIL
 HORIZONTAL
 
 SLIDER
-519
-413
-700
-446
-pop-1-n-in-test-set
-pop-1-n-in-test-set
+518
+399
+719
+432
+pop-1-n-of-candidates
+pop-1-n-of-candidates
 2
-pop-1-max-n-in-test-set
+pop-1-max-n-of-candidates
 6.0
 1
 1
@@ -1430,20 +1420,20 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-762
-674
-817
-692
+761
+640
+816
+658
 for logit:
 11
 0.0
 1
 
 SLIDER
-759
-690
-910
-723
+758
+656
+909
+689
 eta
 eta
 0.001
@@ -1455,56 +1445,31 @@ NIL
 HORIZONTAL
 
 CHOOSER
-759
-627
-911
-672
+758
+593
+910
+638
 tie-breaker
 tie-breaker
 "stick-uniform" "stick-min" "uniform" "min" "random-walk"
 3
 
 TEXTBOX
-761
-610
-894
-628
+760
+576
+893
+594
 for best:
 11
 0.0
 1
 
-SLIDER
-516
-505
-734
-538
-pop-1-n-to-consider-imitating
-pop-1-n-to-consider-imitating
-1
-pop-1-max-n-to-consider-imitating
-1.0
-1
-1
-NIL
-HORIZONTAL
-
 TEXTBOX
 520
-490
+474
 701
-509
-for imitative:
-11
-0.0
-1
-
-TEXTBOX
-521
-397
-672
-415
-for direct:
+530
+In imitative protocols, \n      candidates are agents.\nIn direct protocols, \n      candidates are strategies.
 11
 0.0
 1
@@ -1545,10 +1510,10 @@ candidate-selection
 1
 
 CHOOSER
-533
-614
-708
-659
+532
+580
+707
+625
 decision-method
 decision-method
 "best" "logit" "positive-proportional" "pairwise-difference"
@@ -1609,10 +1574,10 @@ consider-imitating-self?
 -1000
 
 PLOT
-265
-730
-593
-858
+262
+693
+590
+839
 Pop. 1: Strategies' exp. payoffs (recent history)
 milliseconds
 NIL
@@ -1626,10 +1591,10 @@ true
 PENS
 
 PLOT
-595
-730
-932
-858
+592
+693
+929
+839
 Pop. 1: Strategies' exp. payoffs (complete history)
 seconds
 NIL
@@ -1727,20 +1692,20 @@ Candidate selection
 1
 
 TEXTBOX
-550
-667
-700
-685
+549
+633
+699
+651
 mutations:
 11
 0.0
 1
 
 TEXTBOX
-675
-586
-805
-604
+674
+552
+804
+570
 Decision method
 13
 13.0
@@ -1798,30 +1763,15 @@ pop-2-n-of-agents-for-each-strategy
 String (reporter)
 
 SLIDER
-519
-449
-700
-482
-pop-2-n-in-test-set
-pop-2-n-in-test-set
+518
+435
+719
+468
+pop-2-n-of-candidates
+pop-2-n-of-candidates
 2
-pop-2-max-n-in-test-set
+pop-2-max-n-of-candidates
 6.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-516
-540
-734
-573
-pop-2-n-to-consider-imitating
-pop-2-n-to-consider-imitating
-1
-pop-2-max-n-to-consider-imitating
-1.0
 1
 1
 NIL
@@ -1903,10 +1853,10 @@ true
 PENS
 
 PLOT
-265
-860
-593
-989
+262
+841
+590
+987
 Pop. 2: Strategies' exp. payoffs (recent history)
 milliseconds
 NIL
@@ -1920,10 +1870,10 @@ true
 PENS
 
 PLOT
-595
-860
-932
-988
+592
+841
+929
+986
 Pop. 2: Strategies' exp. payoffs (complete history)
 seconds
 NIL

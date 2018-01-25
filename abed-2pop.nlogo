@@ -355,8 +355,6 @@ to update-rate-scalings
   ;; In any other case, in general, the maximum difference is the (max - min) over the whole payoff matrix.
 end
 
-end
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Run-time procedures ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;

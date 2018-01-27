@@ -65,11 +65,7 @@ globals [
   tie-winner-in
 
   ;; for pairwise-difference
-  pop-1-rate-scaling
-  pop-2-rate-scaling
-  pop-1-max-column-difference-payoffs   ;; for efficiency
   pop-1-max-min-payoffs                 ;; for efficiency
-  pop-2-max-column-difference-payoffs   ;; for efficiency
   pop-2-max-min-payoffs                 ;; for efficiency
 
   pop-1-max-n-of-candidates ;; for both direct and imitative protocols
@@ -290,9 +286,6 @@ to setup-dynamics
   ;; RULE USED TO SELECT AMONG DIFFERENT CANDIDATES
   set follow-rule runresult (word "[ [] -> " decision-method " ]")
 
-  ;; UPDATE RATE-SCALING
-  if decision-method = "pairwise-difference" [update-rate-scalings]
-
   ;; TIE-BREAKER
   set tie-winner-in runresult (word "[ [x] -> " tie-breaker " x ]")
 
@@ -329,25 +322,6 @@ to setup-dynamics
     [ ask players [ set potential-imitatees my-pop] ]
     [ ask players [ set potential-imitatees other-agents-in-my-pop] ]
 
-end
-
-to update-rate-scalings
-  ifelse (complete-matching? or (single-sample? and candidate-selection = "direct"))
-    [
-      set pop-1-rate-scaling pop-1-max-column-difference-payoffs
-      set pop-2-rate-scaling pop-2-max-column-difference-payoffs
-    ]
-    [
-      set pop-1-rate-scaling pop-1-max-min-payoffs
-      set pop-2-rate-scaling pop-2-max-min-payoffs
-    ]
-  ;; The rationale is to set the value of pop-x-rate-scaling to the maximum value that payoff-diff can take
-  ;; in procedure pairwise-difference, so magnitude (payoff-diff / rate-scaling) can be interpreted as
-  ;; a probability that can reach the value of 1.
-  ;; If the two payoffs used to compute payoff-diff are calculated against the same sample
-  ;; (which occurs if (complete-matching? or (single-sample? and candidate-selection = "direct")),
-  ;; the maximum value that payoff-diff could take is the maximum possible difference in the payoff matrix, by columns.
-  ;; In any other case, in general, the maximum difference is the (max - min) over the whole payoff matrix.
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -449,11 +423,8 @@ to setup-payoffs
     set pop-1-strategy-numbers (range 1 (pop-1-n-of-strategies + 1))
     set pop-2-strategy-numbers (range 1 (pop-2-n-of-strategies + 1))
 
-    set pop-1-max-column-difference-payoffs max-column-difference pop-1-payoff-matrix
-    set pop-2-max-column-difference-payoffs max-column-difference pop-2-payoff-matrix
     set pop-1-max-min-payoffs max-min-of-matrix pop-1-payoff-matrix
     set pop-2-max-min-payoffs max-min-of-matrix pop-2-payoff-matrix
-    update-rate-scalings
 
   ] [print error-message]
 end
@@ -655,9 +626,9 @@ end
 to pairwise-difference
   ;; useful relevant notes in Sandholm (2010, "Population Games and Evolutionary Dynamics", section 4.3.1, pp. 126-127)
 
-  let rate-scaling (ifelse-value (my-pop-number = 1) [pop-1-rate-scaling][pop-2-rate-scaling])
-  if rate-scaling != 0 [
-    ;; rate-scaling is zero only if the whole payoff matrix is 0s.
+  let max-min-payoff (ifelse-value (my-pop-number = 1) [pop-1-max-min-payoffs][pop-2-max-min-payoffs])
+  if max-min-payoff != 0 [
+    ;; max-min-payoffs is zero only if all elements in the payoff matrix are the same.
     ;; In that case there is nothing to do here.
 
     set pop-1-n-of-candidates 2
@@ -669,11 +640,11 @@ to pairwise-difference
     let better last sorted-candidates
     let payoff-diff ([payoff] of better - [payoff] of worse)
 
-    if random-float 1 < (payoff-diff / rate-scaling) [
+    if random-float 1 < (payoff-diff / max-min-payoff) [
       set next-strategy [strategy] of better
     ]
     ;; If your strategy is the better, you are going to stick with it
-    ;; If it's not, you switch with probability (payoff-diff / rate-scaling)
+    ;; If it's not, you switch with probability (payoff-diff / max-min-payoff)
   ]
 end
 
@@ -852,15 +823,6 @@ end
 ;;;;;;;;;;;;;;;;
 ;;; Matrices ;;;
 ;;;;;;;;;;;;;;;;
-
-to-report max-column-difference [m]
-  let mt transpose-of m
-  report max-row-difference mt
-end
-
-to-report max-row-difference [m]
-  report max n-values (length m) [ [n] -> max (item n m) - min (item n m)]
-end
 
 to-report max-min-of-matrix [m]
   let all-elements reduce sentence m

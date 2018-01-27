@@ -17,7 +17,6 @@ decision-method,"best"
 prob-mutation,0.001
 tie-breaker,"stick-min"
 eta,0.001
-random-walk-speed,1
 trials-with-replacement?,true
 imitatees-with-replacement?,false
 consider-imitating-self?,false

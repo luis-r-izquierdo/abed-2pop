@@ -81,6 +81,7 @@ globals [
   list-of-parameters ;; to save and load parameters
 
   ;; for random-walk tie-breaker
+  random-walk-speed
   pop-1-rw-st-freq-non-committed-agents
   pop-2-rw-st-freq-non-committed-agents
 ]
@@ -237,6 +238,7 @@ to reset-populations
   ]
 
   set n-of-revisions-per-tick min (list n-of-revisions-per-tick (pop-1-n-of-agents + pop-2-n-of-agents))
+  set random-walk-speed 1
   pop-1-setup-random-walk
   pop-2-setup-random-walk
 
@@ -378,8 +380,8 @@ to go
   update-num-agents
 
   if (decision-method = "best" and tie-breaker = "random-walk") [
-    repeat (floor (pop-1-n-of-agents * random-walk-speed)) [pop-1-advance-random-walk]
-    repeat (floor (pop-2-n-of-agents * random-walk-speed)) [pop-2-advance-random-walk]
+    if floor (ticks * random-walk-speed) > floor ((ticks - 1) * random-walk-speed)
+      [pop-1-advance-random-walk pop-2-advance-random-walk]
   ]
 
 end
@@ -713,7 +715,7 @@ end
 
 to-report random-walk [st-list]
     ;; useful relevant notes in Sandholm (2010, "Population Games and Evolutionary Dynamics", section 11.4.3, pp. 421-423)
-  report rnd:weighted-one-of-list (remove-duplicates st-list)
+  report rnd:weighted-one-of-list st-list
     [ [s] -> 1 + item (s - 1) (ifelse-value (my-pop-number = 1) [pop-1-rw-st-freq-non-committed-agents][pop-2-rw-st-freq-non-committed-agents]) ]
     ;; We add one to the weights to account for the non-committed agents
 end
@@ -971,7 +973,6 @@ to setup-list-of-parameters
     "prob-mutation"
     "tie-breaker"
     "eta"
-    "random-walk-speed"
     "trials-with-replacement?"
     "imitatees-with-replacement?"
     "consider-imitating-self?"
@@ -1169,9 +1170,9 @@ HORIZONTAL
 
 SLIDER
 549
-649
+639
 706
-682
+672
 prob-mutation
 prob-mutation
 0
@@ -1280,9 +1281,9 @@ PENS
 
 SLIDER
 286
-574
+564
 481
-607
+597
 duration-of-recent
 duration-of-recent
 1
@@ -1295,9 +1296,9 @@ HORIZONTAL
 
 SWITCH
 287
-613
+603
 481
-646
+636
 show-recent-history?
 show-recent-history?
 0
@@ -1306,9 +1307,9 @@ show-recent-history?
 
 SWITCH
 287
-649
+639
 480
-682
+672
 show-complete-history?
 show-complete-history?
 0
@@ -1339,9 +1340,9 @@ use-prob-revision?
 
 SLIDER
 286
-534
+524
 481
-567
+557
 plot-every-?-secs
 plot-every-?-secs
 0.01
@@ -1421,9 +1422,9 @@ HORIZONTAL
 
 TEXTBOX
 761
-640
+630
 816
-658
+648
 for logit:
 11
 0.0
@@ -1431,9 +1432,9 @@ for logit:
 
 SLIDER
 758
-656
+646
 909
-689
+679
 eta
 eta
 0.001
@@ -1446,9 +1447,9 @@ HORIZONTAL
 
 CHOOSER
 758
-593
+583
 910
-638
+628
 tie-breaker
 tie-breaker
 "stick-uniform" "stick-min" "uniform" "min" "random-walk"
@@ -1456,9 +1457,9 @@ tie-breaker
 
 TEXTBOX
 760
-576
+566
 893
-594
+584
 for best:
 11
 0.0
@@ -1470,31 +1471,6 @@ TEXTBOX
 701
 530
 In imitative protocols, \n      candidates are agents.\nIn direct protocols, \n      candidates are strategies.
-11
-0.0
-1
-
-SLIDER
-27
-938
-235
-971
-random-walk-speed
-random-walk-speed
-0
-1
-1.0
-0.01
-1
-NIL
-HORIZONTAL
-
-TEXTBOX
-28
-923
-288
-942
-for best & random-walk tie-breaker:
 11
 0.0
 1
@@ -1511,9 +1487,9 @@ candidate-selection
 
 CHOOSER
 532
-580
+570
 707
-625
+615
 decision-method
 decision-method
 "best" "logit" "positive-proportional" "pairwise-difference"
@@ -1542,9 +1518,9 @@ single-sample?
 
 SWITCH
 26
-796
+805
 232
-829
+838
 trials-with-replacement?
 trials-with-replacement?
 0
@@ -1552,32 +1528,32 @@ trials-with-replacement?
 -1000
 
 SWITCH
-27
-848
+26
+872
+242
+905
+imitatees-with-replacement?
+imitatees-with-replacement?
+1
+1
+-1000
+
+SWITCH
+26
+910
 243
-881
-imitatees-with-replacement?
-imitatees-with-replacement?
-0
+943
+consider-imitating-self?
+consider-imitating-self?
 1
--1000
-
-SWITCH
-27
-886
-244
-919
-consider-imitating-self?
-consider-imitating-self?
-0
 1
 -1000
 
 PLOT
-262
-693
-590
-839
+260
+683
+588
+829
 Pop. 1: Strategies' exp. payoffs (recent history)
 milliseconds
 NIL
@@ -1591,10 +1567,10 @@ true
 PENS
 
 PLOT
-592
-693
-929
-839
+590
+683
+927
+829
 Pop. 1: Strategies' exp. payoffs (complete history)
 seconds
 NIL
@@ -1642,10 +1618,10 @@ NIL
 1
 
 TEXTBOX
-27
-833
-218
-851
+26
+857
+217
+875
 for imitative:\n
 11
 0.0
@@ -1693,9 +1669,9 @@ Candidate selection
 
 TEXTBOX
 549
-633
+623
 699
-651
+641
 mutations:
 11
 0.0
@@ -1703,9 +1679,9 @@ mutations:
 
 TEXTBOX
 674
-552
+542
 804
-570
+560
 Decision method
 13
 13.0
@@ -1723,9 +1699,9 @@ Game and population
 
 TEXTBOX
 326
-514
+504
 444
-532
+522
 Plotting of output
 12
 0.0
@@ -1733,9 +1709,9 @@ Plotting of output
 
 TEXTBOX
 28
-781
+790
 209
-799
+808
 for complete-matching=off:
 11
 0.0
@@ -1853,10 +1829,10 @@ true
 PENS
 
 PLOT
-262
-841
-590
-987
+260
+831
+588
+977
 Pop. 2: Strategies' exp. payoffs (recent history)
 milliseconds
 NIL
@@ -1870,10 +1846,10 @@ true
 PENS
 
 PLOT
-592
-841
-929
-986
+590
+831
+927
+976
 Pop. 2: Strategies' exp. payoffs (complete history)
 seconds
 NIL

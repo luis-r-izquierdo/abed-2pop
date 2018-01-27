@@ -1480,9 +1480,9 @@ single-sample?
 
 SWITCH
 26
-805
+810
 232
-838
+843
 trials-with-replacement?
 trials-with-replacement?
 0
@@ -1491,9 +1491,9 @@ trials-with-replacement?
 
 SWITCH
 26
-872
-242
-905
+915
+243
+948
 imitatees-with-replacement?
 imitatees-with-replacement?
 1
@@ -1502,9 +1502,9 @@ imitatees-with-replacement?
 
 SWITCH
 26
-910
+879
 243
-943
+912
 consider-imitating-self?
 consider-imitating-self?
 1
@@ -1581,9 +1581,9 @@ NIL
 
 TEXTBOX
 26
-857
+862
 217
-875
+880
 for imitative:\n
 11
 0.0
@@ -1671,9 +1671,9 @@ Plotting of output
 
 TEXTBOX
 28
-790
+795
 209
-808
+813
 for complete-matching=off:
 11
 0.0

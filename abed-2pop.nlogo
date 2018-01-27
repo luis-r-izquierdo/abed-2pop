@@ -65,8 +65,16 @@ globals [
   tie-winner-in
 
   ;; for pairwise-difference
-  pop-1-max-min-payoffs                 ;; for efficiency
-  pop-2-max-min-payoffs                 ;; for efficiency
+  pop-1-max-min-payoffs   ;; for efficiency
+  pop-2-max-min-payoffs   ;; for efficiency
+
+  ;; for linear-dissatisfaction
+  pop-1-max-payoff   ;; for efficiency
+  pop-2-max-payoff   ;; for efficiency
+
+  ;; for linear attraction
+  pop-1-min-payoff   ;; for efficiency
+  pop-2-min-payoff   ;; for efficiency
 
   pop-1-max-n-of-candidates ;; for both direct and imitative protocols
   pop-2-max-n-of-candidates ;; for both direct and imitative protocols
@@ -149,12 +157,15 @@ to startup
 
     setup-dynamics
 
-    if decision-method = "pairwise-difference" [
-      set pop-1-n-of-candidates 2
-      set pop-2-n-of-candidates 2
-    ]
+    if decision-method = "pairwise-difference"
+       or decision-method = "linear-dissatisfaction"
+       or decision-method = "linear-attraction"
+       [
+         set pop-1-n-of-candidates 2
+         set pop-2-n-of-candidates 2
+       ]
     ;; the lines above are included here, rather than in setup-dynamics, because,
-    ;; at runtime, this code is best executed within reporter pairwise-difference,
+    ;; at runtime, this code is best executed within each decision-method,
     ;; just before pop-X-n-to-consider is used, to avoid any runtime errors.
 
     update-ticks-per-second
@@ -423,8 +434,14 @@ to setup-payoffs
     set pop-1-strategy-numbers (range 1 (pop-1-n-of-strategies + 1))
     set pop-2-strategy-numbers (range 1 (pop-2-n-of-strategies + 1))
 
-    set pop-1-max-min-payoffs max-min-of-matrix pop-1-payoff-matrix
-    set pop-2-max-min-payoffs max-min-of-matrix pop-2-payoff-matrix
+    set pop-1-max-payoff max-of-matrix pop-1-payoff-matrix
+    set pop-2-max-payoff max-of-matrix pop-2-payoff-matrix
+
+    set pop-1-min-payoff min-of-matrix pop-1-payoff-matrix
+    set pop-2-min-payoff min-of-matrix pop-2-payoff-matrix
+
+    set pop-1-max-min-payoffs pop-1-max-payoff - pop-1-min-payoff
+    set pop-2-max-min-payoffs pop-2-max-payoff - pop-2-min-payoff
 
   ] [print error-message]
 end
@@ -670,6 +687,60 @@ to positive-proportional
   set next-strategy [strategy] of target-candidate
 end
 
+to linear-dissatisfaction
+
+  let max-min-payoff (ifelse-value (my-pop-number = 1) [pop-1-max-min-payoffs][pop-2-max-min-payoffs])
+  if max-min-payoff != 0 [
+    ;; max-min-payoffs is zero only if all elements in the payoff matrix are the same.
+    ;; In that case there is nothing to do here.
+
+    let max-payoff (ifelse-value (my-pop-number = 1) [pop-1-max-payoff][pop-2-max-payoff])
+
+    set pop-1-n-of-candidates 2
+    set pop-2-n-of-candidates 2
+    run update-candidates-and-payoffs
+      ;; here the revising agent's payoff is updated,
+      ;; so we can use payoff safely.
+
+    let my-strategy strategy
+    let the-other one-of ((turtle-set candidates) with [strategy != my-strategy])
+
+    if the-other != nobody [
+      ;; if the other one has your strategy too, it's fine, since
+      ;; you are not going to change your strategy anyway.
+      if random-float 1 < ((max-payoff - payoff) / max-min-payoff) [
+        set next-strategy [strategy] of the-other
+      ]
+    ]
+  ]
+end
+
+to linear-attraction
+
+  let max-min-payoff (ifelse-value (my-pop-number = 1) [pop-1-max-min-payoffs][pop-2-max-min-payoffs])
+  if max-min-payoff != 0 [
+    ;; max-min-payoffs is zero only if all elements in the payoff matrix are the same.
+    ;; In that case there is nothing to do here.
+
+    let min-payoff (ifelse-value (my-pop-number = 1) [pop-1-min-payoff][pop-2-min-payoff])
+
+    set pop-1-n-of-candidates 2
+    set pop-2-n-of-candidates 2
+    run update-candidates-and-payoffs
+
+    let my-strategy strategy
+    let the-other one-of ((turtle-set candidates) with [strategy != my-strategy])
+
+    if the-other != nobody [
+      ;; if the other one has your strategy too, it's fine, since
+      ;; you are not going to change your strategy anyway.
+      if random-float 1 < (([payoff] of the-other - min-payoff) / max-min-payoff) [
+        set next-strategy [strategy] of the-other
+      ]
+    ]
+  ]
+end
+
 ;; TIE-BREAKERS
 
 to-report stick-uniform [st-list]
@@ -824,9 +895,12 @@ end
 ;;; Matrices ;;;
 ;;;;;;;;;;;;;;;;
 
-to-report max-min-of-matrix [m]
-  let all-elements reduce sentence m
-  report (max all-elements - min all-elements)
+to-report max-of-matrix [m]
+  report max reduce sentence m
+end
+
+to-report min-of-matrix [m]
+  report min reduce sentence m
 end
 
 to-report transpose-of [m]
@@ -1284,7 +1358,7 @@ INPUTBOX
 250
 679
 pop-1-n-of-agents-for-each-strategy
-[1000 0 0 0 0 0]
+[500 0 0 0 0 0]
 1
 0
 String (reporter)
@@ -1454,7 +1528,7 @@ CHOOSER
 615
 decision-method
 decision-method
-"best" "logit" "positive-proportional" "pairwise-difference"
+"best" "logit" "positive-proportional" "pairwise-difference" "linear-dissatisfaction" "linear-attraction"
 0
 
 TEXTBOX
@@ -1695,7 +1769,7 @@ INPUTBOX
 250
 743
 pop-2-n-of-agents-for-each-strategy
-[1000 0 0 0 0 0]
+[500 0 0 0 0 0]
 1
 0
 String (reporter)
@@ -1724,7 +1798,7 @@ pop-1-n-of-agents
 pop-1-n-of-agents
 1
 2000
-1000.0
+500.0
 1
 1
 NIL
@@ -1739,7 +1813,7 @@ pop-2-n-of-agents
 pop-2-n-of-agents
 1
 2000
-1000.0
+500.0
 1
 1
 NIL

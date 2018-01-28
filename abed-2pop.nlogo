@@ -575,7 +575,7 @@ to update-candidate-agents-with-replacement
 end
 
 to update-candidate-agents-without-replacement
-  set candidates (fput self (n-of (ifelse-value (my-pop-number = 1) [pop-1-n-of-candidates - 1][pop-2-n-of-candidates - 1]) potential-imitatees))
+  set candidates (fput self sort (n-of (ifelse-value (my-pop-number = 1) [pop-1-n-of-candidates - 1][pop-2-n-of-candidates - 1]) potential-imitatees))
 end
 
 to update-candidate-strategies-and-payoffs

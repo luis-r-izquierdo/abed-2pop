@@ -1504,9 +1504,9 @@ for best:
 TEXTBOX
 520
 474
-701
-530
-In imitative protocols, \n      candidates are agents.\nIn direct protocols, \n      candidates are strategies.
+722
+535
+Under imitative protocols, \n      candidates are agents.\nUnder direct protocols, \n      candidates are strategies.
 11
 0.0
 1
@@ -1553,10 +1553,10 @@ single-sample?
 -1000
 
 SWITCH
-26
-810
-232
-843
+25
+931
+231
+964
 trials-with-replacement?
 trials-with-replacement?
 0
@@ -1564,10 +1564,10 @@ trials-with-replacement?
 -1000
 
 SWITCH
-26
-915
-243
-948
+25
+857
+242
+890
 imitatees-with-replacement?
 imitatees-with-replacement?
 1
@@ -1575,10 +1575,10 @@ imitatees-with-replacement?
 -1000
 
 SWITCH
-26
-879
-243
-912
+25
+821
+242
+854
 consider-imitating-self?
 consider-imitating-self?
 1
@@ -1654,11 +1654,11 @@ NIL
 1
 
 TEXTBOX
-26
-862
-217
-880
-for imitative:\n
+25
+804
+246
+832
+for candidate-selection = imitative:\n
 11
 0.0
 1
@@ -1744,20 +1744,20 @@ Plotting of output
 1
 
 TEXTBOX
-28
-795
-209
-813
+27
+916
+208
+934
 for complete-matching=off:
 11
 0.0
 1
 
 TEXTBOX
-24
-757
-243
-775
+26
+750
+245
+768
 ---------------------------------------\n
 11
 0.0
@@ -1897,6 +1897,16 @@ true
 true
 "" ""
 PENS
+
+TEXTBOX
+57
+777
+218
+795
+Auxiliary parameters
+13
+13.0
+1
 
 @#$#@#$#@
 ## HOW TO USE THIS MODEL

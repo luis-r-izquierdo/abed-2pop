@@ -1316,10 +1316,10 @@ true
 PENS
 
 SLIDER
-286
-564
-481
-597
+284
+558
+479
+591
 duration-of-recent
 duration-of-recent
 1
@@ -1331,10 +1331,10 @@ sec.
 HORIZONTAL
 
 SWITCH
-287
-603
-481
-636
+285
+597
+479
+630
 show-recent-history?
 show-recent-history?
 0
@@ -1342,10 +1342,10 @@ show-recent-history?
 -1000
 
 SWITCH
-287
-639
-480
-672
+285
+633
+478
+666
 show-complete-history?
 show-complete-history?
 0
@@ -1353,10 +1353,10 @@ show-complete-history?
 -1000
 
 INPUTBOX
-25
-619
-250
-679
+24
+539
+249
+599
 pop-1-n-of-agents-for-each-strategy
 [500 0 0 0 0 0]
 1
@@ -1375,10 +1375,10 @@ use-prob-revision?
 -1000
 
 SLIDER
-286
-524
-481
-557
+284
+518
+479
+551
 plot-every-?-secs
 plot-every-?-secs
 0.01
@@ -1734,10 +1734,10 @@ Game and population
 1
 
 TEXTBOX
-326
-504
-444
-522
+324
+498
+442
+516
 Plotting of output
 12
 0.0
@@ -1764,10 +1764,10 @@ TEXTBOX
 1
 
 INPUTBOX
-25
-683
-250
-743
+24
+603
+249
+663
 pop-2-n-of-agents-for-each-strategy
 [500 0 0 0 0 0]
 1
@@ -1790,10 +1790,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-26
-501
-223
-534
+24
+667
+249
+700
 pop-1-n-of-agents
 pop-1-n-of-agents
 1
@@ -1805,10 +1805,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-26
-537
-223
-570
+24
+703
+249
+736
 pop-2-n-of-agents
 pop-2-n-of-agents
 1
@@ -1820,10 +1820,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-26
-578
-243
-611
+25
+498
+251
+531
 random-initial-condition?
 random-initial-condition?
 1

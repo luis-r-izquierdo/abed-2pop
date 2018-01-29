@@ -64,9 +64,9 @@ globals [
   reported-counterparts
   tie-winner-in
 
-  ;; for pairwise-difference
-  pop-1-max-min-payoffs   ;; for efficiency
-  pop-2-max-min-payoffs   ;; for efficiency
+  ;; for pairwise-difference, linear-dissatisfaction and linear-attraction
+  pop-1-max-payoff-difference   ;; for efficiency
+  pop-2-max-payoff-difference   ;; for efficiency
 
   ;; for linear-dissatisfaction
   pop-1-max-payoff   ;; for efficiency
@@ -440,8 +440,8 @@ to setup-payoffs
     set pop-1-min-payoff min-of-matrix pop-1-payoff-matrix
     set pop-2-min-payoff min-of-matrix pop-2-payoff-matrix
 
-    set pop-1-max-min-payoffs pop-1-max-payoff - pop-1-min-payoff
-    set pop-2-max-min-payoffs pop-2-max-payoff - pop-2-min-payoff
+    set pop-1-max-payoff-difference pop-1-max-payoff - pop-1-min-payoff
+    set pop-2-max-payoff-difference pop-2-max-payoff - pop-2-min-payoff
 
   ] [print error-message]
 end
@@ -643,9 +643,9 @@ end
 to pairwise-difference
   ;; useful relevant notes in Sandholm (2010, "Population Games and Evolutionary Dynamics", section 4.3.1, pp. 126-127)
 
-  let max-min-payoff (ifelse-value (my-pop-number = 1) [pop-1-max-min-payoffs][pop-2-max-min-payoffs])
-  if max-min-payoff != 0 [
-    ;; max-min-payoffs is zero only if all elements in the payoff matrix are the same.
+  let max-payoff-difference (ifelse-value (my-pop-number = 1) [pop-1-max-payoff-difference][pop-2-max-payoff-difference])
+  if max-payoff-difference != 0 [
+    ;; max-payoff-difference is zero only if all elements in the payoff matrix are the same.
     ;; In that case there is nothing to do here.
 
     set pop-1-n-of-candidates 2
@@ -657,11 +657,11 @@ to pairwise-difference
     let better last sorted-candidates
     let payoff-diff ([payoff] of better - [payoff] of worse)
 
-    if random-float 1 < (payoff-diff / max-min-payoff) [
+    if random-float 1 < (payoff-diff / max-payoff-difference) [
       set next-strategy [strategy] of better
     ]
     ;; If your strategy is the better, you are going to stick with it
-    ;; If it's not, you switch with probability (payoff-diff / max-min-payoff)
+    ;; If it's not, you switch with probability (payoff-diff / max-payoff-difference)
   ]
 end
 
@@ -689,9 +689,9 @@ end
 
 to linear-dissatisfaction
 
-  let max-min-payoff (ifelse-value (my-pop-number = 1) [pop-1-max-min-payoffs][pop-2-max-min-payoffs])
-  if max-min-payoff != 0 [
-    ;; max-min-payoffs is zero only if all elements in the payoff matrix are the same.
+  let max-payoff-difference (ifelse-value (my-pop-number = 1) [pop-1-max-payoff-difference][pop-2-max-payoff-difference])
+  if max-payoff-difference != 0 [
+    ;; max-payoff-difference is zero only if all elements in the payoff matrix are the same.
     ;; In that case there is nothing to do here.
 
     let max-payoff (ifelse-value (my-pop-number = 1) [pop-1-max-payoff][pop-2-max-payoff])
@@ -708,7 +708,7 @@ to linear-dissatisfaction
     if the-other != nobody [
       ;; if the other one has your strategy too, it's fine, since
       ;; you are not going to change your strategy anyway.
-      if random-float 1 < ((max-payoff - payoff) / max-min-payoff) [
+      if random-float 1 < ((max-payoff - payoff) / max-payoff-difference) [
         set next-strategy [strategy] of the-other
       ]
     ]
@@ -717,9 +717,9 @@ end
 
 to linear-attraction
 
-  let max-min-payoff (ifelse-value (my-pop-number = 1) [pop-1-max-min-payoffs][pop-2-max-min-payoffs])
-  if max-min-payoff != 0 [
-    ;; max-min-payoffs is zero only if all elements in the payoff matrix are the same.
+  let max-payoff-difference (ifelse-value (my-pop-number = 1) [pop-1-max-payoff-difference][pop-2-max-payoff-difference])
+  if max-payoff-difference != 0 [
+    ;; max-payoff-difference is zero only if all elements in the payoff matrix are the same.
     ;; In that case there is nothing to do here.
 
     let min-payoff (ifelse-value (my-pop-number = 1) [pop-1-min-payoff][pop-2-min-payoff])
@@ -734,7 +734,7 @@ to linear-attraction
     if the-other != nobody [
       ;; if the other one has your strategy too, it's fine, since
       ;; you are not going to change your strategy anyway.
-      if random-float 1 < (([payoff] of the-other - min-payoff) / max-min-payoff) [
+      if random-float 1 < (([payoff] of the-other - min-payoff) / max-payoff-difference) [
         set next-strategy [strategy] of the-other
       ]
     ]

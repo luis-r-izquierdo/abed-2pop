@@ -16,7 +16,7 @@ single-sample?,true
 decision-method,"best"
 prob-mutation,0.001
 tie-breaker,"uniform"
-eta,0.001
+log-noise-level,0
 trials-with-replacement?,false
 imitatees-with-replacement?,false
 consider-imitating-self?,false

@@ -1205,10 +1205,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-549
-639
-706
-672
+547
+633
+704
+666
 prob-mutation
 prob-mutation
 0
@@ -1457,20 +1457,20 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-761
-630
-816
-648
-for logit:
+759
+624
+927
+642
+for decision-method = logit:
 11
 0.0
 1
 
 SLIDER
-758
-646
-909
-679
+756
+640
+907
+673
 log-noise-level
 log-noise-level
 -3
@@ -1482,30 +1482,30 @@ NIL
 HORIZONTAL
 
 CHOOSER
-758
-583
-910
-628
+756
+577
+908
+622
 tie-breaker
 tie-breaker
 "stick-uniform" "stick-min" "uniform" "min" "random-walk"
 3
 
 TEXTBOX
-760
-566
-893
-584
-for best:
+758
+560
+927
+588
+for decision-method = best:
 11
 0.0
 1
 
 TEXTBOX
 520
-474
+472
 722
-535
+533
 Under imitative protocols, \n      candidates are agents.\nUnder direct protocols, \n      candidates are strategies.
 11
 0.0
@@ -1522,10 +1522,10 @@ candidate-selection
 1
 
 CHOOSER
-532
-570
-707
-615
+530
+564
+705
+609
 decision-method
 decision-method
 "best" "logit" "positive-proportional" "pairwise-difference" "linear-dissatisfaction" "linear-attraction"
@@ -1534,9 +1534,9 @@ decision-method
 TEXTBOX
 747
 438
-923
+933
 468
-for complete-matching=off \n     & direct:
+for complete-matching=off \n  & candidate-selection = direct:
 11
 0.0
 1
@@ -1704,20 +1704,20 @@ Candidate selection
 1
 
 TEXTBOX
-549
-623
-699
-641
+547
+617
+697
+635
 mutations:
 11
 0.0
 1
 
 TEXTBOX
-674
-542
-804
-560
+672
+538
+802
+556
 Decision method
 13
 13.0
@@ -1745,10 +1745,10 @@ Plotting of output
 
 TEXTBOX
 27
-916
-208
-934
-for complete-matching=off:
+914
+216
+932
+for complete-matching = off:
 11
 0.0
 1

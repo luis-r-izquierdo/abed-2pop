@@ -1,0 +1,26 @@
+payoff-matrix,"[ [[5 1] [0 0] [0 0] [0 0] [0 0] [0 0]] [[4 2] [4 2] [0 0] [0 0] [0 0] [0 0]] [[3 3] [3 3] [3 3] [0 0] [0 0] [0 0]] [[2 4] [2 4] [2 4] [2 4] [0 0] [0 0]] [[1 5] [1 5] [1 5] [1 5] [1 5] [0 0]] [[0 6] [0 6] [0 6] [0 6] [0 6] [0 6]]]"
+pop-1-n-of-agents,300
+pop-2-n-of-agents,300
+random-initial-condition?,false
+pop-1-n-of-agents-for-each-strategy,"[50 50 50 50 50 50]"
+pop-2-n-of-agents-for-each-strategy,"[50 50 50 50 50 50]"
+use-prob-revision?,false
+prob-revision,0.001
+n-of-revisions-per-tick,100
+candidate-selection,"imitative"
+pop-1-n-of-candidates,2
+pop-2-n-of-candidates,2
+complete-matching?,true
+n-of-trials,300
+single-sample?,true
+decision-method,"pairwise-difference"
+prob-mutation,0.05
+tie-breaker,"uniform"
+log-noise-level,0
+trials-with-replacement?,false
+imitatees-with-replacement?,false
+consider-imitating-self?,false
+plot-every-?-secs,0.16666666666666666
+duration-of-recent,20
+show-recent-history?,true
+show-complete-history?,true
